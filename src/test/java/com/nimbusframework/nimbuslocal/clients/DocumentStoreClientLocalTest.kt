@@ -1,16 +1,16 @@
-package com.nimbusframework.nimbuslocal.unitTests
+package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.Document
 import com.nimbusframework.nimbuslocal.exampleModels.Person
-import org.junit.jupiter.api.Test
+import io.kotlintest.specs.AnnotationSpec
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class DocumentStoreClientLocalTest {
+class DocumentStoreClientLocalTest: AnnotationSpec() {
 
-    private val documentOne = Document("testDocument", listOf(Person("TestPerson", 22)))
-    private val documentTwo = Document("testDocument2", listOf(Person("TestPerson2", 21)))
+    private val documentOne = Document("testDocument", listOf(Person("TestPerson", 22)), 78)
+    private val documentTwo = Document("testDocument2", listOf(Person("TestPerson2", 21)), 98)
 
     @Test
     fun testAddIncreasesSizeAndAddsCorrectItem() {

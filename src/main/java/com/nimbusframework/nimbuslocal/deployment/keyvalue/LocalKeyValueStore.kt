@@ -1,37 +1,32 @@
 package com.nimbusframework.nimbuslocal.deployment.keyvalue
 
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.nimbusframework.nimbuscore.clients.keyvalue.AbstractKeyValueStoreClient
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.nimbusframework.nimbuscore.clients.keyvalue.AbstractKeyValueStoreClient
+import com.nimbusframework.nimbuscore.clients.store.ReadItemRequest
+import com.nimbusframework.nimbuscore.clients.store.WriteItemRequest
+import com.nimbusframework.nimbuscore.clients.store.conditions.Condition
+import com.nimbusframework.nimbuscore.exceptions.RetryableException
+import com.nimbusframework.nimbuscore.exceptions.StoreConditionException
+import com.nimbusframework.nimbuslocal.deployment.store.*
+import java.util.*
 
-class LocalKeyValueStore<K, V>(private val keyClass: Class<K>, private val valueClass: Class<V>, stage: String): AbstractKeyValueStoreClient<K, V>(keyClass, valueClass, stage) {
+class LocalKeyValueStore<K, V>(private val keyClass: Class<K>, private val valueClass: Class<V>, stage: String)
+    : AbstractKeyValueStoreClient<K, V>(keyClass, valueClass, stage), LocalStoreTransactions {
 
-    private val keyValueStore: MutableMap<K, String> = mutableMapOf()
+    private var keyValueStore = LocalStore(keyClass, valueClass, attributes)
+
+
     private val objectMapper = ObjectMapper()
-    private val methods: MutableList<KeyValueMethod> = mutableListOf()
 
     internal val internalTableName = userTableName
 
     override fun put(key: K, value: V) {
-        val valueStr = allAttributesToJson(value)
-
-        if (keyValueStore.containsKey(key)) {
-            val oldItem = objectMapper.readValue(keyValueStore[key], valueClass)
-            keyValueStore[key] = valueStr
-            methods.forEach {method -> method.invokeModify(oldItem, value)}
-
-        } else {
-            keyValueStore[key] = valueStr
-            methods.forEach {method -> method.invokeInsert(value)}
-        }
+        keyValueStore.put(key, value)
     }
 
     override fun delete(keyObj: K) {
-        if (keyValueStore.containsKey(keyObj)) {
-            val removedItemStr = keyValueStore.remove(keyObj)
-            val oldItem = objectMapper.readValue(removedItemStr, valueClass)
-            methods.forEach {method -> method.invokeRemove(oldItem)}
-        }
+        keyValueStore.delete(keyObj)
     }
 
     internal fun putJson(obj: String) {
@@ -51,34 +46,76 @@ class LocalKeyValueStore<K, V>(private val keyClass: Class<K>, private val value
     }
 
     override fun get(keyObj: K): V? {
-        val strValue = keyValueStore[keyObj]
-        return if (strValue != null) {
-            objectMapper.readValue(strValue, valueClass)
-        } else {
-            null
-        }
+        return keyValueStore.get(keyObj)
     }
 
-    fun size(): Int {return keyValueStore.size}
+    override fun delete(keyObj: K, condition: Condition) {
+        keyValueStore.delete(keyObj, condition)
+    }
+
+    override fun getDecrementValueRequest(key: K, numericFieldName: String, amount: Number): WriteItemRequest {
+        return keyValueStore.getDecrementValueRequest(key, numericFieldName, amount)
+    }
+
+    override fun getDecrementValueRequest(key: K, numericFieldName: String, amount: Number, condition: Condition): WriteItemRequest {
+        return keyValueStore.getDecrementValueRequest(key, numericFieldName, amount, condition)
+    }
+
+    override fun getDeleteItemRequest(key: K): WriteItemRequest {
+        return keyValueStore.getDeleteKeyItemRequest(key)
+    }
+
+    override fun getDeleteItemRequest(key: K, condition: Condition): WriteItemRequest {
+        return keyValueStore.getDeleteKeyItemRequest(key, condition)
+    }
+
+    override fun getIncrementValueRequest(key: K, numericFieldName: String, amount: Number): WriteItemRequest {
+        return keyValueStore.getIncrementValueRequest(key, numericFieldName, amount)
+    }
+
+    override fun getIncrementValueRequest(key: K, numericFieldName: String, amount: Number, condition: Condition): WriteItemRequest {
+        return keyValueStore.getIncrementValueRequest(key, numericFieldName, amount, condition)
+    }
+
+    override fun getReadItem(keyObj: K): ReadItemRequest<V> {
+        return keyValueStore.getReadItem(keyObj)
+    }
+
+    override fun getWriteItem(key: K, value: V): WriteItemRequest {
+        return keyValueStore.getWriteItem(key, value)
+    }
+
+    override fun getWriteItem(key: K, value: V, condition: Condition): WriteItemRequest {
+        return keyValueStore.getWriteItem(key, value, condition)
+    }
+
+    override fun put(key: K, value: V, condition: Condition) {
+        keyValueStore.put(key, value, condition)
+    }
+
+    fun size(): Int {
+        return keyValueStore.size()
+    }
 
     internal fun addMethod(method: KeyValueMethod) {
-        methods.add(method)
+        keyValueStore.addMethod(method)
     }
 
 
     override fun getAll(): Map<K, V> {
-        return keyValueStore.mapValues { entry -> objectMapper.readValue(entry.value, valueClass)}
+        return keyValueStore.getAll()
     }
 
-    private fun allAttributesToJson(obj: V): String {
-        val attributeMap: MutableMap<String, Any?> = mutableMapOf()
+    override fun startTransaction(transactionUid: UUID) {
+        keyValueStore.startTransaction(transactionUid)
+    }
 
-        for ((fieldName, field) in attributes) {
-            field.isAccessible = true
-            attributeMap[fieldName] = field.get(obj)
-        }
+    override fun successfulTransaction(transactionUid: UUID) {
+        keyValueStore.successfulTransaction(transactionUid)
+    }
 
-        return objectMapper.writeValueAsString(attributeMap)
+    override fun failedTransaction(transactionUid: UUID) {
+        keyValueStore.failedTransaction(transactionUid)
     }
 
 }

@@ -5,12 +5,13 @@ import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.Document
 import com.nimbusframework.nimbuslocal.exampleModels.Person
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleDocumentHandler
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class DocumentHandlerLocalTest {
+class DocumentHandlerLocalTest: AnnotationSpec() {
 
-    private val documentOne = Document("testDocument", listOf(Person("TestPerson", 22)))
+    private val documentOne = Document("testDocument", listOf(Person("TestPerson", 22)), 67)
 
     @Test
     fun insertingIntoDatabaseTriggersAllFunctions() {

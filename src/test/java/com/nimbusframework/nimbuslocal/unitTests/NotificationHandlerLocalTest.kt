@@ -3,10 +3,11 @@ package com.nimbusframework.nimbuslocal.unitTests
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleNotificationHandler
 import com.nimbusframework.nimbuslocal.exampleModels.Person
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class NotificationHandlerLocalTest {
+class NotificationHandlerLocalTest: AnnotationSpec() {
 
     private val testPerson = Person("Thomas", 21)
 

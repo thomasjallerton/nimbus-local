@@ -1,14 +1,15 @@
-package com.nimbusframework.nimbuslocal.unitTests
+package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.clients.ClientBuilder
 import com.nimbusframework.nimbuscore.clients.notification.Protocol
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleNotificationHandler
 import com.nimbusframework.nimbuslocal.exampleModels.Person
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class NotificationClientLocalTest {
+class NotificationClientLocalTest: AnnotationSpec() {
 
     @Test
     fun subscribingWorksAndSendingMessageWorks() {

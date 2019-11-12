@@ -1,13 +1,14 @@
-package com.nimbusframework.nimbuslocal.unitTests
+package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.eventabstractions.FileStorageEvent
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleFileStorageHandler
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import java.io.File
 import kotlin.test.assertEquals
 
-class FileStorageClientLocalTest {
+class FileStorageClientLocalTest: AnnotationSpec() {
 
     @Test
     fun testTriggeredOnNewFile() {

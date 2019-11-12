@@ -9,5 +9,7 @@ data class Document(
         @Key
         val name: String = "",
         @Attribute
-        val people: List<Person> = listOf()
+        val people: List<Person>? = null,
+        @Attribute
+        val number: Int = 0
 )

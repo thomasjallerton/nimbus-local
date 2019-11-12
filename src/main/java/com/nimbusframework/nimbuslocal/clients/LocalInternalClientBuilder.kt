@@ -9,9 +9,11 @@ import com.nimbusframework.nimbuscore.clients.function.EnvironmentVariableClient
 import com.nimbusframework.nimbuscore.clients.keyvalue.KeyValueStoreClient
 import com.nimbusframework.nimbuscore.clients.notification.NotificationClient
 import com.nimbusframework.nimbuscore.clients.queue.QueueClient
+import com.nimbusframework.nimbuscore.clients.store.TransactionalClient
 import com.nimbusframework.nimbuscore.clients.websocket.ServerlessFunctionWebSocketClient
 
 object LocalInternalClientBuilder: InternalClientBuilder {
+
     override fun getBasicServerlessFunctionClient(handlerClass: Class<*>, functionName: String): BasicServerlessFunctionClient {
         return BasicServerlessFunctionClientLocal(handlerClass, functionName)
     }
@@ -22,6 +24,10 @@ object LocalInternalClientBuilder: InternalClientBuilder {
 
     override fun <T> getDocumentStoreClient(document: Class<T>, stage: String): DocumentStoreClient<T> {
         return DocumentStoreClientLocal(document)
+    }
+
+    override fun getTransactionalClient(): TransactionalClient {
+        return TransactionalClientLocal()
     }
 
     override fun getEnvironmentVariableClient(): EnvironmentVariableClient {

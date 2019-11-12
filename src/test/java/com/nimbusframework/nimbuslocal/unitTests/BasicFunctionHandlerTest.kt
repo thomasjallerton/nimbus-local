@@ -3,10 +3,11 @@ package com.nimbusframework.nimbuslocal.unitTests
 import com.nimbusframework.nimbuscore.clients.ClientBuilder
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleBasicFunctionHandler
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class BasicFunctionHandlerTest {
+class BasicFunctionHandlerTest: AnnotationSpec() {
 
     @Test
     fun triggerMethodActuallyTriggersMethod() {

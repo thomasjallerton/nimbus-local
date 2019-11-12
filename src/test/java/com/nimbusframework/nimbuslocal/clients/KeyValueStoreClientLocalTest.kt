@@ -1,13 +1,14 @@
-package com.nimbusframework.nimbuslocal.unitTests
+package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.clients.ClientBuilder
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
 import com.nimbusframework.nimbuslocal.exampleModels.Person
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class KeyValueStoreClientLocalTest {
+class KeyValueStoreClientLocalTest: AnnotationSpec() {
 
     private val houseOne = KeyValue("testHouse", listOf(Person("TestPerson", 22)))
     private val houseTwo = KeyValue("testHouse2", listOf(Person("TestPerson2", 21)))

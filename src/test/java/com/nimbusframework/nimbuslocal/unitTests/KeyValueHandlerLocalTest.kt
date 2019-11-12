@@ -4,10 +4,11 @@ import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
 import com.nimbusframework.nimbuslocal.exampleModels.Person
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleKeyValueHandler
+import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class KeyValueHandlerLocalTest {
+class KeyValueHandlerLocalTest: AnnotationSpec() {
 
     private val keyValueItem = KeyValue("keyvalueitem", listOf(Person("TestPerson", 22)))
 
