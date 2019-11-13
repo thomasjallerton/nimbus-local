@@ -24,7 +24,7 @@ internal class TransactionalClientLocalTest: AnnotationSpec() {
 
     @BeforeEach
     fun setup() {
-        localStore = LocalStore(String::class.java, StoreItem::class.java, StoreItem.allAttributes)
+        localStore = LocalStore(String::class.java, StoreItem::class.java, "string", StoreItem.allAttributes)
     }
 
     @Test
@@ -56,6 +56,19 @@ internal class TransactionalClientLocalTest: AnnotationSpec() {
             // Catch exception that will be thrown
         }
         localStore.size() shouldBe 0
+    }
+
+    @Test
+    fun correctlyRollsBackWriteTransactionsErrorsWithExistingItems() {
+        localStore.put("original", storeItem)
+        val requests = listOf(localStore.getWriteItem("key", storeItem), localStore.getWriteItem("key2", storeItem2, AttributeExists("key2")))
+        try {
+            underTest.executeWriteTransaction(requests)
+        } catch (e: StoreConditionException) {
+            // Catch exception that will be thrown
+        }
+        localStore.size() shouldBe 1
+        localStore.get("original") shouldBe storeItem
     }
 
     @Test(expected = StoreConditionException::class)

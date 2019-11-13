@@ -14,7 +14,7 @@ import java.util.*
 class LocalKeyValueStore<K, V>(private val keyClass: Class<K>, private val valueClass: Class<V>, stage: String)
     : AbstractKeyValueStoreClient<K, V>(keyClass, valueClass, stage), LocalStoreTransactions {
 
-    private var keyValueStore = LocalStore(keyClass, valueClass, attributes)
+    private var keyValueStore = LocalStore(keyClass, valueClass, keyName, attributes)
 
 
     private val objectMapper = ObjectMapper()

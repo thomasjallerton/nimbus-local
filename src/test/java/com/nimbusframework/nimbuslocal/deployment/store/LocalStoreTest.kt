@@ -16,7 +16,7 @@ internal class LocalStoreTest : AnnotationSpec() {
 
     @BeforeEach
     fun setup() {
-        localStore = LocalStore(String::class.java, StoreItem::class.java, StoreItem.allAttributes)
+        localStore = LocalStore(String::class.java, StoreItem::class.java, "string", StoreItem.allAttributes)
     }
 
     @Test

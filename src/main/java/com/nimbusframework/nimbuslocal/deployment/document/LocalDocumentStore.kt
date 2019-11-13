@@ -13,7 +13,7 @@ import java.util.*
 class LocalDocumentStore<T>(private val clazz: Class<T>, stage: String)
     : AbstractDocumentStoreClient<T>(clazz, stage), LocalStoreTransactions {
 
-    private var documentStore = LocalStore(Any::class.java, clazz, allAttributes)
+    private var documentStore = LocalStore(Any::class.java, clazz, keys.keys.first(), allAttributes)
 
     private val objectMapper = ObjectMapper()
 

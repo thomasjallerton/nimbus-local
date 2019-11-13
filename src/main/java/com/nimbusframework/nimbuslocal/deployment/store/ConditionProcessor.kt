@@ -13,7 +13,7 @@ import com.nimbusframework.nimbuscore.clients.store.conditions.function.Function
 import com.nimbusframework.nimbuscore.clients.store.conditions.variable.ColumnVariable
 import com.nimbusframework.nimbuscore.clients.store.conditions.variable.ConditionVariable
 
-class ConditionProcessor <T> (private val clazz: Class<T>) {
+class ConditionProcessor <T> (private val clazz: Class<T>, private val keyColumnName: String) {
 
     fun processCondition(condition: Condition, obj: T?): Boolean {
         return when (condition) {
@@ -80,12 +80,14 @@ class ConditionProcessor <T> (private val clazz: Class<T>) {
         return when (functionCondition) {
             is AttributeExists -> {
                 if (obj == null) return false
+                if (functionCondition.fieldName == keyColumnName) return true
                 val field = clazz.getDeclaredField(functionCondition.fieldName)
                 field.isAccessible = true
                 field[obj] != null
             }
             is AttributeNotExists -> {
                 if (obj == null) return true
+                if (functionCondition.fieldName == keyColumnName) return false
                 val field = clazz.getDeclaredField(functionCondition.fieldName)
                 field.isAccessible = true
                 field[obj] == null

@@ -7,13 +7,15 @@ import com.nimbusframework.nimbuscore.clients.store.conditions.function.Attribut
 import com.nimbusframework.nimbuscore.clients.store.conditions.variable.NumericVariable
 import com.nimbusframework.nimbuscore.clients.store.conditions.variable.StringVariable
 import com.nimbusframework.nimbuslocal.exampleModels.Document
+import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.AnnotationSpec
 
 internal class ConditionProcessorTest : AnnotationSpec() {
 
-    private val underTest = ConditionProcessor(Document::class.java)
+    private val underTest = ConditionProcessor(Document::class.java, "name")
     private val document = Document("testDocument", null, 78)
+    private val keyValue = KeyValue("testKeyValue")
 
     @Test
     fun canCorrectlyCompareStrings() {
@@ -48,6 +50,16 @@ internal class ConditionProcessorTest : AnnotationSpec() {
         underTest.processCondition(AttributeNotExists("number"), document) shouldBe false
         underTest.processCondition(AttributeNotExists("people"), document) shouldBe true
         underTest.processCondition(AttributeNotExists("number"), null) shouldBe true
+    }
+
+    @Test
+    fun canCorrectlyCallFunctionsKeyValue() {
+        val underTest = ConditionProcessor(KeyValue::class.java, "PrimaryKey")
+        underTest.processCondition(AttributeExists("PrimaryKey"), keyValue) shouldBe true
+        underTest.processCondition(AttributeExists("PrimaryKey"), null) shouldBe false
+
+        underTest.processCondition(AttributeNotExists("PrimaryKey"), keyValue) shouldBe false
+        underTest.processCondition(AttributeNotExists("PrimaryKey"), null) shouldBe true
     }
 
     @Test

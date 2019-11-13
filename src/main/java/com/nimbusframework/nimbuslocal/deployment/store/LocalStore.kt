@@ -12,6 +12,7 @@ import java.util.*
 class LocalStore<K, V>(
         keyClass: Class<K>,
         private val valueClass: Class<V>,
+        private val primaryKeyColumn: String,
         private val allAttributes: Map<String, Field>): LocalStoreTransactions {
 
     private var localStore: MutableMap<K, String> = mutableMapOf()
@@ -22,7 +23,7 @@ class LocalStore<K, V>(
     private val objectMapper = ObjectMapper()
     private val methods: MutableList<StoreMethod> = mutableListOf()
 
-    private val conditionProcessor = ConditionProcessor(valueClass)
+    private val conditionProcessor = ConditionProcessor(valueClass, primaryKeyColumn)
 
     internal fun addMethod(method: StoreMethod) {
         methods.add(method)
