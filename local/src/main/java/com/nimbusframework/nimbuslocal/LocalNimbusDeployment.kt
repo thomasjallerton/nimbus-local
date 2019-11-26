@@ -341,13 +341,12 @@ class LocalNimbusDeployment {
         }
     }
 
-    fun sendHttpRequest(request: HttpRequest) {
+    fun sendHttpRequest(request: HttpRequest): Any? {
         val localHttpMethods = localResourceHolder.httpMethods
 
         for ((identifier, method) in localHttpMethods) {
             if (identifier.matches(request.path, request.method)) {
-                method.invoke(request, identifier)
-                return
+                return method.invoke(request, identifier)
             }
         }
         throw ResourceNotFoundException()
