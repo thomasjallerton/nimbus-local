@@ -1,6 +1,7 @@
 package com.nimbusframework.nimbuslocal.deployment.services.usesresources
 
 import com.nimbusframework.nimbuscore.annotations.queue.UsesQueue
+import com.nimbusframework.nimbuscore.clients.queue.QueueIdAnnotationService
 import com.nimbusframework.nimbuscore.permissions.PermissionType
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionEnvironment
 import com.nimbusframework.nimbuslocal.deployment.function.permissions.QueuePermission
@@ -17,7 +18,8 @@ class LocalUsesQueueHandler(
 
         for (usesQueue in usesQueues) {
             if (usesQueue.stages.contains(stage)) {
-                functionEnvironment.addPermission(PermissionType.QUEUE, QueuePermission(usesQueue.id))
+                val queueId = QueueIdAnnotationService.getQueueId(usesQueue.queue.java, stage)
+                functionEnvironment.addPermission(PermissionType.QUEUE, QueuePermission(queueId))
             }
         }
     }

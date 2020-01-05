@@ -4,36 +4,36 @@ import com.nimbusframework.nimbuscore.clients.ClientBuilder
 import com.nimbusframework.nimbuscore.clients.notification.Protocol
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleNotificationHandler
+import com.nimbusframework.nimbuslocal.exampleModels.NotificationTopic
 import com.nimbusframework.nimbuslocal.exampleModels.Person
 import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Test
 
 class NotificationClientLocalTest: AnnotationSpec() {
 
     @Test
     fun subscribingWorksAndSendingMessageWorks() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("test-client-topic")
+        val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
+        val topic = localDeployment.getNotificationTopic("Topic")
 
-        val localClient = ClientBuilder.getNotificationClient("test-client-topic")
+        val localClient = ClientBuilder.getNotificationClient("Topic")
 
         localClient.createSubscription(Protocol.HTTP, "www.test.com")
-        localClient.notify("message")
+        localClient.notify("{\"name\":\"Tom\", \"age\":15}")
 
         val sentMessages = topic.getEndpointsMessages(Protocol.HTTP, "www.test.com")
 
         assertEquals(1, sentMessages.size)
-        assertEquals("message", sentMessages[0])
+        assertEquals("{\"name\":\"Tom\", \"age\":15}", sentMessages[0])
     }
 
     @Test
     fun subscribingWorksAndSendingMessageWorksWithObject() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("test-client-topic")
+        val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
+        val topic = localDeployment.getNotificationTopic("Topic")
         val person = Person("Thomas", 21)
 
-        val localClient = ClientBuilder.getNotificationClient("test-client-topic")
+        val localClient = ClientBuilder.getNotificationClient(NotificationTopic::class.java)
 
         localClient.createSubscription(Protocol.HTTP, "www.test.com")
         localClient.notifyJson(person)
@@ -46,14 +46,14 @@ class NotificationClientLocalTest: AnnotationSpec() {
 
     @Test
     fun unsubscribeWorks() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("test-client-topic")
+        val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
+        val topic = localDeployment.getNotificationTopic("Topic")
 
-        val localClient = ClientBuilder.getNotificationClient("test-client-topic")
+        val localClient = ClientBuilder.getNotificationClient(NotificationTopic::class.java)
 
         val id = localClient.createSubscription(Protocol.HTTP, "www.test.com")
         localClient.deleteSubscription(id)
-        localClient.notify("message")
+        localClient.notify("{\"name\":\"Tom\", \"age\":15}")
 
         val sentMessages = topic.getEndpointsMessages(Protocol.HTTP, "www.test.com")
 

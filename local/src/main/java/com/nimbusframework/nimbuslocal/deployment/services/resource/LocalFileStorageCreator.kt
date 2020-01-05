@@ -1,8 +1,9 @@
 package com.nimbusframework.nimbuslocal.deployment.services.resource
 
 import com.nimbusframework.nimbuscore.annotations.deployment.FileUpload
-import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucket
-import com.nimbusframework.nimbuscore.annotations.file.UsesFileStorage
+import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucketDefinition
+import com.nimbusframework.nimbuscore.annotations.file.UsesFileStorageBucket
+import com.nimbusframework.nimbuscore.clients.file.FileStorageBucketNameAnnotationService
 import com.nimbusframework.nimbuscore.persisted.FileUploadDescription
 import com.nimbusframework.nimbuslocal.deployment.file.LocalFileStorage
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
@@ -17,7 +18,7 @@ class LocalFileStorageCreator(
 ) : LocalCreateResourcesHandler {
 
     override fun createResource(clazz: Class<out Any>) {
-        val fileStorageBuckets = clazz.getAnnotationsByType(FileStorageBucket::class.java)
+        val fileStorageBuckets = clazz.getAnnotationsByType(FileStorageBucketDefinition::class.java)
         val localWebservers = localResourceHolder.httpServers
 
         for (fileStorageBucket in fileStorageBuckets) {
@@ -43,23 +44,10 @@ class LocalFileStorageCreator(
             }
         }
 
-        for (method in clazz.declaredMethods) {
-            val usesFileStorages = method.getAnnotationsByType(UsesFileStorage::class.java)
-
-            val fileStorage = localResourceHolder.fileStorage
-
-            for (usesFileStorage in usesFileStorages) {
-                if (usesFileStorage.stages.contains(stage)) {
-                    if (!fileStorage.containsKey(usesFileStorage.bucketName)) {
-                        fileStorage[usesFileStorage.bucketName] = LocalFileStorage(usesFileStorage.bucketName, listOf())
-                    }
-                }
-            }
-        }
-
         for (fileUpload in clazz.getAnnotationsByType(FileUpload::class.java)) {
             if (fileUpload.stages.contains(stage)) {
-                val bucketFiles = fileUploadDetails.getOrPut(fileUpload.bucketName) { mutableListOf() }
+                val bucketName = FileStorageBucketNameAnnotationService.getBucketName(fileUpload.fileStorageBucket.java, stage)
+                val bucketFiles = fileUploadDetails.getOrPut(bucketName) { mutableListOf() }
                 val description = FileUploadDescription(fileUpload.localPath, fileUpload.targetPath, fileUpload.substituteNimbusVariables)
                 bucketFiles.add(description)
             }

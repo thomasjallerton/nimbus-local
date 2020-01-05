@@ -3,6 +3,7 @@ package com.nimbusframework.nimbuslocal.clients
 import com.nimbusframework.nimbuscore.eventabstractions.FileStorageEvent
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleFileStorageHandler
+import com.nimbusframework.nimbuslocal.exampleModels.Bucket
 import io.kotlintest.specs.AnnotationSpec
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -12,13 +13,13 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
     @Test
     fun testTriggeredOnNewFile() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleFileStorageHandler::class.java)
+        val localDeployment = LocalNimbusDeployment.getNewInstance(Bucket::class.java, ExampleFileStorageHandler::class.java)
 
         val method = localDeployment.getMethod(ExampleFileStorageHandler::class.java, "newFile")
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("testbucket")
+        val fileStorage = localDeployment.getLocalFileStorage("Test")
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
 
@@ -31,13 +32,13 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
     @Test
     fun testTriggeredOnFileDeleted() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleFileStorageHandler::class.java)
+        val localDeployment = LocalNimbusDeployment.getNewInstance(Bucket::class.java, ExampleFileStorageHandler::class.java)
 
         val method = localDeployment.getMethod(ExampleFileStorageHandler::class.java, "deletedFile")
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("testbucket")
+        val fileStorage = localDeployment.getLocalFileStorage("Test")
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
         fileStorage.deleteFile(path
@@ -51,13 +52,13 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
     @Test
     fun notTriggeredIfFileDoesntExist() {
-        val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleFileStorageHandler::class.java)
+        val localDeployment = LocalNimbusDeployment.getNewInstance(Bucket::class.java, ExampleFileStorageHandler::class.java)
 
         val method = localDeployment.getMethod(ExampleFileStorageHandler::class.java, "deletedFile")
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("testbucket")
+        val fileStorage = localDeployment.getLocalFileStorage("Test")
         val path = "testdir" + File.separator + "shouldnotexist"
 
         fileStorage.deleteFile(path)

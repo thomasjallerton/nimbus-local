@@ -1,6 +1,7 @@
 package com.nimbusframework.nimbuslocal.deployment.services.function
 
 import com.nimbusframework.nimbuscore.annotations.function.FileStorageServerlessFunction
+import com.nimbusframework.nimbuscore.clients.file.FileStorageBucketNameAnnotationService
 import com.nimbusframework.nimbuslocal.deployment.file.FileStorageMethod
 import com.nimbusframework.nimbuslocal.deployment.file.LocalFileStorage
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
@@ -28,16 +29,14 @@ class LocalFileStorageFunctionHandler(
             if (fileStorageFunction.stages.contains(stage)) {
                 val invokeOn = clazz.getConstructor().newInstance()
 
-                if (!fileStorage.containsKey(fileStorageFunction.bucketName)) {
-                    fileStorage[fileStorageFunction.bucketName] = LocalFileStorage(fileStorageFunction.bucketName, listOf(""))
-                }
-                val localFileStorage = fileStorage[fileStorageFunction.bucketName]
+                val bucketName = FileStorageBucketNameAnnotationService.getBucketName(fileStorageFunction.fileStorageBucket.java, stage)
+                val localFileStorage = fileStorage[bucketName]!!
                 val fileStorageMethod = FileStorageMethod(method, invokeOn, fileStorageFunction.eventType)
                 val functionInformation = FileStorageFunctionInformation(
-                        fileStorageFunction.bucketName,
+                        bucketName,
                         fileStorageFunction.eventType
                 )
-                localFileStorage!!.addMethod(fileStorageMethod)
+                localFileStorage.addMethod(fileStorageMethod)
                 methods[functionIdentifier] = ServerlessFunction(fileStorageMethod, functionInformation)
             }
         }

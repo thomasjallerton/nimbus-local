@@ -1,7 +1,6 @@
 package com.nimbusframework.nimbuslocal.deployment.services.resource
 
-import com.nimbusframework.nimbuscore.annotations.keyvalue.KeyValueStore
-import com.nimbusframework.nimbuscore.clients.keyvalue.AbstractKeyValueStoreClient
+import com.nimbusframework.nimbuscore.annotations.keyvalue.KeyValueStoreDefinition
 import com.nimbusframework.nimbuscore.clients.keyvalue.KeyValueStoreAnnotationService
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.deployment.keyvalue.LocalKeyValueStore
@@ -13,13 +12,13 @@ class LocalKeyValueStoreCreator(
 ): LocalCreateResourcesHandler {
 
     override fun createResource(clazz: Class<out Any>) {
-        val keyValueStoreAnnotations = clazz.getAnnotationsByType(KeyValueStore::class.java)
+        val keyValueStoreAnnotations = clazz.getAnnotationsByType(KeyValueStoreDefinition::class.java)
 
         for (keyValueStoreAnnotation in keyValueStoreAnnotations) {
             if (keyValueStoreAnnotation.stages.contains(stage)) {
                 val tableName = KeyValueStoreAnnotationService.getTableName(clazz, LocalNimbusDeployment.stage)
                 val keyTypeAndName = KeyValueStoreAnnotationService.getKeyNameAndType(clazz, LocalNimbusDeployment.stage)
-                val annotation = clazz.getDeclaredAnnotation(KeyValueStore::class.java)
+                val annotation = clazz.getDeclaredAnnotation(KeyValueStoreDefinition::class.java)
 
                 val localStore = LocalKeyValueStore(
                         annotation.keyType.java,

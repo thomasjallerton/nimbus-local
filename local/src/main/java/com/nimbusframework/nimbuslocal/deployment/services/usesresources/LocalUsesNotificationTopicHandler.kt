@@ -1,6 +1,7 @@
 package com.nimbusframework.nimbuslocal.deployment.services.usesresources
 
 import com.nimbusframework.nimbuscore.annotations.notification.UsesNotificationTopic
+import com.nimbusframework.nimbuscore.clients.notification.NotificationTopicAnnotationService
 import com.nimbusframework.nimbuscore.permissions.PermissionType
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionEnvironment
 import com.nimbusframework.nimbuslocal.deployment.function.permissions.NotificationTopicPermission
@@ -17,7 +18,8 @@ class LocalUsesNotificationTopicHandler(
 
         for (usesNotificationTopic in usesNotificationTopics) {
             if (usesNotificationTopic.stages.contains(stage)) {
-                functionEnvironment.addPermission(PermissionType.NOTIFICATION_TOPIC, NotificationTopicPermission(usesNotificationTopic.topic))
+                val topicName = NotificationTopicAnnotationService.getTopicName(usesNotificationTopic.notificationTopic.java, stage)
+                functionEnvironment.addPermission(PermissionType.NOTIFICATION_TOPIC, NotificationTopicPermission(topicName))
             }
         }
     }

@@ -1,6 +1,11 @@
 package com.nimbusframework.nimbuslocal.deployment.services.function
 
 import com.nimbusframework.nimbuscore.annotations.function.NotificationServerlessFunction
+import com.nimbusframework.nimbuscore.annotations.notification.NotificationTopicDefinition
+import com.nimbusframework.nimbuscore.clients.notification.NotificationTopic
+import com.nimbusframework.nimbuscore.clients.notification.NotificationTopicAnnotationService
+import com.nimbusframework.nimbuscore.wrappers.annotations.datamodel.DataModelAnnotation
+import com.nimbusframework.nimbuscore.wrappers.annotations.datamodel.NotificationTopicServerlessFunctionAnnotation
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
 import com.nimbusframework.nimbuslocal.deployment.function.ServerlessFunction
 import com.nimbusframework.nimbuslocal.deployment.function.information.NotificationFunctionInformation
@@ -25,8 +30,9 @@ class LocalNotificationFunctionHandler(
                 val invokeOn = clazz.getConstructor().newInstance()
 
                 val notificationMethod = NotificationMethod(method, invokeOn)
-                val functionInformation = NotificationFunctionInformation(notificationFunction.topic)
-                val notificationTopic = localResourceHolder.notificationTopics.getOrPut(notificationFunction.topic) { LocalNotificationTopic() }
+                val topicName = NotificationTopicAnnotationService.getTopicName(notificationFunction.notificationTopic.java, stage)
+                val functionInformation = NotificationFunctionInformation(topicName)
+                val notificationTopic = localResourceHolder.notificationTopics[topicName]!!
 
                 notificationTopic.addSubscriber(notificationMethod)
                 localResourceHolder.functions[functionIdentifier] = ServerlessFunction(notificationMethod, functionInformation)

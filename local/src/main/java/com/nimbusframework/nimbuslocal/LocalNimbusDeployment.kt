@@ -68,6 +68,7 @@ class LocalNimbusDeployment {
         localCreateResourcesHandlers.add(LocalFileStorageCreator(localResourceHolder, httpPort, variableSubstitution, fileUploadDetails, stage))
         localCreateResourcesHandlers.add(LocalKeyValueStoreCreator(localResourceHolder, stage))
         localCreateResourcesHandlers.add(LocalNotificationTopicCreator(localResourceHolder, stage))
+        localCreateResourcesHandlers.add(LocalQueueCreator(localResourceHolder, stage))
 
         val classes = serviceScanner.getSubTypesOf(LocalCreateResourcesHandler::class.java)
         val handlers = classes.map { clazz ->
@@ -100,11 +101,21 @@ class LocalNimbusDeployment {
         initialiseResourceCreators()
         initialiseUseResourceHandlers()
 
+        val allClasses = mutableListOf<Class<*>>()
+        allClasses.addAll(classes)
+
         for (clazz in classes) {
-            createResources(clazz)
-            createHandlers(clazz)
-            handleUseResources(clazz)
+            allClasses.addAll(getNestedClasses(clazz))
         }
+
+        //Handle Resources that need to exist for handlers to work
+        allClasses.forEach { clazz -> createResources(clazz) }
+
+        //Handle function handlers
+        allClasses.forEach { clazz -> createHandlers(clazz) }
+
+        //Handle use resources
+        allClasses.forEach { clazz -> handleUseResources(clazz) }
 
         val fileService = FileService(variableSubstitution)
 
@@ -112,6 +123,15 @@ class LocalNimbusDeployment {
 
         localResourceHolder.afterDeployments.forEach { method -> method.invoke() }
     }
+
+    private fun getNestedClasses(clazz: Class<out Any>): List<Class<*>> {
+        val result = mutableListOf<Class<*>>()
+        result.addAll(clazz.classes)
+        clazz.classes.forEach { result.addAll(getNestedClasses(it)) }
+
+        return result
+    }
+
 
     private constructor(packageName: String, stageParam: String = "dev", httpPort: Int = 8080, webSocketPort: Int = 8081) {
         instance = this

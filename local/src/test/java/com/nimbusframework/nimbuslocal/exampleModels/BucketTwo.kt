@@ -1,14 +1,15 @@
 package com.nimbusframework.nimbuslocal.exampleModels
 
 import com.nimbusframework.nimbuscore.annotations.deployment.AfterDeployment
-import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucket
-import com.nimbusframework.nimbuscore.annotations.file.UsesFileStorage
+import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucketDefinition
+import com.nimbusframework.nimbuscore.annotations.file.UsesFileStorageBucket
 import com.nimbusframework.nimbuscore.clients.ClientBuilder
 
-@FileStorageBucket(bucketName = "BucketTwo", staticWebsite = true)
+@FileStorageBucketDefinition(bucketName = "BucketTwo", staticWebsite = true)
 class BucketTwo {
+
     @AfterDeployment
-    @UsesFileStorage(bucketName = "BucketTwo")
+    @UsesFileStorageBucket(fileStorageBucket = BucketTwo::class)
     fun uploadFile() {
         val client = ClientBuilder.getFileStorageClient("BucketTwo")
         client.saveFile("test.txt", "HELLO WORLD")

@@ -1,6 +1,6 @@
 package com.nimbusframework.nimbuslocal.clients
 
-import com.nimbusframework.nimbuscore.annotations.database.RelationalDatabase
+import com.nimbusframework.nimbuscore.annotations.database.RelationalDatabaseDefinition
 import com.nimbusframework.nimbuscore.clients.database.DatabaseClient
 import com.nimbusframework.nimbuscore.permissions.PermissionType
 import java.sql.Connection
@@ -17,7 +17,7 @@ internal class DatabaseClientLocal<T>(private val databaseObject: Class<T>): Dat
     override fun getConnection(): Connection {
         checkClientUse()
         Class.forName("org.h2.Driver").newInstance()
-        val relationalDatabase = databaseObject.getDeclaredAnnotation(RelationalDatabase::class.java)
+        val relationalDatabase = databaseObject.getDeclaredAnnotation(RelationalDatabaseDefinition::class.java)
         val username = "root"
         val password = ""
         return DriverManager.getConnection("jdbc:h2:mem:${relationalDatabase.name};DB_CLOSE_DELAY=-1", username, password)
@@ -26,7 +26,7 @@ internal class DatabaseClientLocal<T>(private val databaseObject: Class<T>): Dat
     override fun getConnection(databaseName: String, createIfNotExist: Boolean): Connection {
         checkClientUse()
         Class.forName("org.h2.Driver").newInstance()
-        val relationalDatabase = databaseObject.getDeclaredAnnotation(RelationalDatabase::class.java)
+        val relationalDatabase = databaseObject.getDeclaredAnnotation(RelationalDatabaseDefinition::class.java)
         val username = "root"
         val password = ""
         return DriverManager.getConnection("jdbc:h2:mem:${relationalDatabase.name}$databaseName;DB_CLOSE_DELAY=-1",

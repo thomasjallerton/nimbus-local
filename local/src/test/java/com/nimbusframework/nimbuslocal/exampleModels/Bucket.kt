@@ -1,6 +1,6 @@
 package com.nimbusframework.nimbuslocal.exampleModels
 
-import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucket
+import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucketDefinition
 
-@FileStorageBucket(bucketName = "Test")
+@FileStorageBucketDefinition(bucketName = "Test")
 class Bucket

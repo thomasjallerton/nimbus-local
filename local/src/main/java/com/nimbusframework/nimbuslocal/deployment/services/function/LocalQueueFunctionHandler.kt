@@ -1,6 +1,7 @@
 package com.nimbusframework.nimbuslocal.deployment.services.function
 
 import com.nimbusframework.nimbuscore.annotations.function.QueueServerlessFunction
+import com.nimbusframework.nimbuscore.clients.queue.QueueIdAnnotationService
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
 import com.nimbusframework.nimbuslocal.deployment.function.ServerlessFunction
 import com.nimbusframework.nimbuslocal.deployment.function.information.QueueFunctionInformation
@@ -25,14 +26,11 @@ class LocalQueueFunctionHandler(
                 val invokeOn = clazz.getConstructor().newInstance()
 
                 val queueMethod = QueueMethod(method, invokeOn, queueFunction.batchSize)
-                val functionInformation = QueueFunctionInformation(queueFunction.id, queueFunction.batchSize)
-                val queue = if (localResourceHolder.queues.containsKey(queueFunction.id)) {
-                    localResourceHolder.queues[queueFunction.id]!!
-                } else {
-                    val newQueue = LocalQueue()
-                    localResourceHolder.queues[queueFunction.id] = newQueue
-                    newQueue
-                }
+                val queueId = QueueIdAnnotationService.getQueueId(queueFunction.queue.java, stage)
+
+                val functionInformation = QueueFunctionInformation(queueId, queueFunction.batchSize)
+                val queue = localResourceHolder.queues[queueId]!!
+
                 queue.addConsumer(queueMethod)
                 localResourceHolder.functions[functionIdentifier] = ServerlessFunction(queueMethod, functionInformation)
             }

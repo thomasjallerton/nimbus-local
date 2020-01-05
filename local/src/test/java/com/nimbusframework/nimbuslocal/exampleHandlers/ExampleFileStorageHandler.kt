@@ -3,15 +3,16 @@ package com.nimbusframework.nimbuslocal.exampleHandlers
 import com.nimbusframework.nimbuscore.annotations.file.FileStorageEventType
 import com.nimbusframework.nimbuscore.annotations.function.FileStorageServerlessFunction
 import com.nimbusframework.nimbuscore.eventabstractions.FileStorageEvent
+import com.nimbusframework.nimbuslocal.exampleModels.Bucket
 
 class ExampleFileStorageHandler {
 
-    @FileStorageServerlessFunction(bucketName = "testbucket", eventType = FileStorageEventType.OBJECT_CREATED)
+    @FileStorageServerlessFunction(fileStorageBucket = Bucket::class, eventType = FileStorageEventType.OBJECT_CREATED)
     fun newFile(event: FileStorageEvent) {
         return
     }
 
-    @FileStorageServerlessFunction(bucketName = "testbucket", eventType = FileStorageEventType.OBJECT_DELETED)
+    @FileStorageServerlessFunction(fileStorageBucket = Bucket::class, eventType = FileStorageEventType.OBJECT_DELETED)
     fun deletedFile(event: FileStorageEvent) {
         return
     }

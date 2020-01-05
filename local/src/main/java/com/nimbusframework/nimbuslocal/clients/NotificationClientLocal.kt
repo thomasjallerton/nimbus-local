@@ -26,7 +26,7 @@ internal class NotificationClientLocal(private val topic: String): NotificationC
 
     override fun notifyJson(message: Any) {
         checkClientUse()
-        notificationTopic.notify(message)
+        notificationTopic.notifyJson(message)
     }
 
     override fun deleteSubscription(subscriptionId: String) {

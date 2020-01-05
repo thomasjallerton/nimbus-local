@@ -28,19 +28,19 @@ class LocalNotificationTopic {
         return id
     }
 
-    fun notify(message: Any) {
+    fun notify(message: String) {
         totalNotifications++
         generalSubscribers.forEach { subscriberInformation -> notifiedEndpoints[subscriberInformation.value]!!.add(message) }
 
-        val objectMapper = ObjectMapper()
-        methodSubscribers.forEach { subscriber -> subscriber.invoke(objectMapper.writeValueAsString(message)) }
+        methodSubscribers.forEach { subscriber -> subscriber.invoke(message) }
     }
 
-    internal fun notifyJson(json: String) {
+    internal fun notifyJson(json: Any) {
         totalNotifications++
         generalSubscribers.forEach { subscriberInformation -> notifiedEndpoints[subscriberInformation.value]!!.add(json) }
 
-        methodSubscribers.forEach { subscriber -> subscriber.invoke(json) }
+        val objectMapper = ObjectMapper()
+        methodSubscribers.forEach { subscriber -> subscriber.invoke(objectMapper.writeValueAsString(json)) }
     }
 
     fun getTotalNumberOfNotifications(): Int {return totalNotifications}
