@@ -27,6 +27,8 @@ class AllResourcesWebserverHandler(stage: String) : AbstractHandler() {
 
         val pathPrefix = extractPathPrefix(target)
 
+        handleCors(response)
+
         val handler = handlerMap[pathPrefix]
         if (handler != null) {
             val subTarget = target.substringAfter("/$pathPrefix")
@@ -42,6 +44,11 @@ class AllResourcesWebserverHandler(stage: String) : AbstractHandler() {
 
             baseRequest.isHandled = true
         }
+    }
+
+    fun handleCors(response: HttpServletResponse) {
+        response.addHeader("Access-Control-Allow-Origin", "*")
+        response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
     }
 
     fun addResource(pathPrefix: String, handler: WebServerHandler) {

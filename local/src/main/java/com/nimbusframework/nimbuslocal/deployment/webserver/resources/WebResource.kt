@@ -1,5 +1,6 @@
 package com.nimbusframework.nimbuslocal.deployment.webserver.resources
 
+import com.nimbusframework.nimbuslocal.deployment.webserver.CorsInformation
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -9,17 +10,10 @@ abstract class WebResource(
         private val baseRequest: String
 ) {
 
-    val allowedHeaders: Set<String>
+    private val allowedHeaders: Set<String>
 
     init {
-        //Default CORs headers
-        val allowedHeadersTmp = mutableSetOf(
-                "accept",
-                "accept-language",
-                "content-language",
-                "origin",
-                "content-type"
-        )
+        val allowedHeadersTmp = CorsInformation.allowedHeaders.toMutableSet()
         headers.forEach { allowedHeadersTmp.add(it.toLowerCase()) }
         allowedHeaders = allowedHeadersTmp
     }

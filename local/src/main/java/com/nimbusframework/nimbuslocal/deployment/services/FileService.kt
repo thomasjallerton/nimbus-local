@@ -37,6 +37,8 @@ class FileService(
                         "$targetFile/"
                     }
                     uploadDirectory(fileStorageClient, file, newPath, substituteVariables)
+                } else {
+                    throw IllegalArgumentException("$localFile is not file or directory on the system")
                 }
             }
         }
