@@ -48,7 +48,7 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v4.3.0
       with:
         branch: master
-        file_pattern: pom.xml aws/pom.xml core/pom.xml
+        file_pattern: pom.xml local/pom.xml local-aws/pom.xml
         tagging_message: '${{ steps.version.outputs.version }}'
         commit_message: release version
     
@@ -67,5 +67,5 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v4.3.0
       with:
         branch: master
-        file_pattern: pom.xml aws/pom.xml core/pom.xml
+        file_pattern: pom.xml local/pom.xml local-aws/pom.xml
         commit_message: prepare for next development cycle
