@@ -15,4 +15,9 @@ data class HttpRequest(
     fun setBodyFromObject(body: Any) {
         this.body = ObjectMapper().writeValueAsString(body)
     }
+
+    fun withBodyFromObject(body: Any): HttpRequest {
+        this.body = ObjectMapper().writeValueAsString(body)
+        return this
+    }
 }

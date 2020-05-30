@@ -48,4 +48,8 @@ abstract class WebResource(
         }
         return true
     }
+
+    fun addAllowedHeaders(response: HttpServletResponse) {
+        response.addHeader("Access-Control-Allow-Headers", allowedHeaders.joinToString())
+    }
 }
