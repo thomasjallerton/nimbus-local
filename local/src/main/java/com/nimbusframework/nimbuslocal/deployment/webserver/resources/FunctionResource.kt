@@ -39,21 +39,27 @@ class FunctionResource(
 
         val httpRequest = HttpRequest(correctedPath, httpMethod, strBody, headers)
 
-        val result = method.invoke(httpRequest, HttpMethodIdentifier(path, httpMethod))
+        try {
+            val result = method.invoke(httpRequest, HttpMethodIdentifier(path, httpMethod))
 
-        response.contentType = "application/json"
+            response.contentType = "application/json"
 
-        if (result is HttpResponse) {
-            for ((headerName, headerValue) in result.headers) {
-                response.setHeader(headerName, headerValue)
+            if (result is HttpResponse) {
+                for ((headerName, headerValue) in result.headers) {
+                    response.setHeader(headerName, headerValue)
+                }
+                response.status = result.statusCode
+
+                response.writer.print(result.body)
+            } else if (result !is Unit){
+                response.writer.print(objectMapper.writeValueAsString(result))
             }
-            response.status = result.statusCode
-
-            response.writer.print(result.body)
-        } else if (result !is Unit){
-            response.writer.print(objectMapper.writeValueAsString(result))
+        } catch (e: Exception) {
+            response.status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR
+            e.printStackTrace()
+        } finally {
+            response.writer.close()
         }
-        response.writer.close()
     }
 
     private fun getHeaders(request: HttpServletRequest): Map<String, List<String>> {

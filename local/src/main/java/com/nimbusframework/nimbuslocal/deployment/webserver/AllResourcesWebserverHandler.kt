@@ -49,6 +49,7 @@ class AllResourcesWebserverHandler(stage: String) : AbstractHandler() {
     fun handleCors(response: HttpServletResponse) {
         response.addHeader("Access-Control-Allow-Origin", "*")
         response.addHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        response.addHeader("Access-Control-Allow-Headers", "")
     }
 
     fun addResource(pathPrefix: String, handler: WebServerHandler) {

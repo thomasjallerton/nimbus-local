@@ -36,9 +36,14 @@ open class WebServerHandler(private val indexFile: String,
             }
         }
 
-
         if (webResource != null) {
-            if (passesCors(webResource, request)) {
+            if (httpMethod == HttpMethod.OPTIONS) {
+                // Preflight CORS request
+                webResource.addAllowedHeaders(response)
+                response.status = HttpServletResponse.SC_OK
+                response.writer.close()
+            } else if (passesCors(webResource, request)) {
+                webResource.addAllowedHeaders(response)
                 webResource.writeResponse(request, response, target)
             } else {
                 response.status = HttpServletResponse.SC_UNAUTHORIZED

@@ -23,7 +23,7 @@ data class HttpMethodIdentifier(
     }
 
     fun matches(givenPath: String, method: HttpMethod): Boolean {
-        if (method != this.method) return false
+        if (method != HttpMethod.OPTIONS && method != this.method) return false
         return if (pathParameterNames.isNotEmpty()) {
             path.toRegex().matches(givenPath)
         } else {
