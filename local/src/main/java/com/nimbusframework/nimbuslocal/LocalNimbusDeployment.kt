@@ -1,5 +1,7 @@
 package com.nimbusframework.nimbuslocal
 
+import com.nimbusframework.nimbusaws.annotation.services.ReadUserConfigService
+import com.nimbusframework.nimbuscore.annotations.NimbusConstants
 import com.nimbusframework.nimbuscore.clients.ClientBinder
 import com.nimbusframework.nimbuscore.eventabstractions.RequestContext
 import com.nimbusframework.nimbuscore.persisted.FileUploadDescription
@@ -15,6 +17,7 @@ import com.nimbusframework.nimbuslocal.deployment.notification.LocalNotification
 import com.nimbusframework.nimbuslocal.deployment.queue.LocalQueue
 import com.nimbusframework.nimbuslocal.deployment.services.FileService
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 import com.nimbusframework.nimbuslocal.deployment.services.function.*
 import com.nimbusframework.nimbuslocal.deployment.services.resource.*
 import com.nimbusframework.nimbuslocal.deployment.services.usesresources.*
@@ -42,6 +45,8 @@ class LocalNimbusDeployment {
     private val variableSubstitution: MutableMap<String, String> = mutableMapOf()
     private val fileUploadDetails: MutableMap<String, MutableList<FileUploadDescription>> = mutableMapOf()
 
+    private val userConfig = ReadUserConfigService().readUserConfig()
+
     private val serviceScanner: Reflections = Reflections(ConfigurationBuilder()
             .setScanners(SubTypesScanner(false))
             .addUrls(ClasspathHelper.forJavaClassPath())
@@ -51,43 +56,44 @@ class LocalNimbusDeployment {
                             .excludePackage("com.nimbusframework.nimbuslocal")
             ))
 
-    private fun initialiseFunctionHandlers() {
-        localFunctionHandlers.add(LocalAfterDeploymentHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalBasicFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalDocumentStoreFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalFileStorageFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalHttpFunctionHandler(localResourceHolder, httpPort, variableSubstitution, stage))
-        localFunctionHandlers.add(LocalKeyValueStoreFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalNotificationFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalQueueFunctionHandler(localResourceHolder, stage))
-        localFunctionHandlers.add(LocalWebSocketFunctionHandler(localResourceHolder, webSocketPort, variableSubstitution, stage))
+
+    private fun initialiseFunctionHandlers(stageService: StageService) {
+        localFunctionHandlers.add(LocalAfterDeploymentHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalBasicFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalDocumentStoreFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalFileStorageFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalHttpFunctionHandler(localResourceHolder, httpPort, variableSubstitution, stageService))
+        localFunctionHandlers.add(LocalKeyValueStoreFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalNotificationFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalQueueFunctionHandler(localResourceHolder, stageService))
+        localFunctionHandlers.add(LocalWebSocketFunctionHandler(localResourceHolder, webSocketPort, variableSubstitution, stageService))
     }
 
-    private fun initialiseResourceCreators() {
-        localCreateResourcesHandlers.add(LocalDocumentStoreCreator(localResourceHolder, stage))
-        localCreateResourcesHandlers.add(LocalFileStorageCreator(localResourceHolder, httpPort, variableSubstitution, fileUploadDetails, stage))
-        localCreateResourcesHandlers.add(LocalKeyValueStoreCreator(localResourceHolder, stage))
-        localCreateResourcesHandlers.add(LocalNotificationTopicCreator(localResourceHolder, stage))
-        localCreateResourcesHandlers.add(LocalQueueCreator(localResourceHolder, stage))
+    private fun initialiseResourceCreators(stageService: StageService) {
+        localCreateResourcesHandlers.add(LocalDocumentStoreCreator(localResourceHolder, stageService))
+        localCreateResourcesHandlers.add(LocalFileStorageCreator(localResourceHolder, httpPort, variableSubstitution, fileUploadDetails, stageService))
+        localCreateResourcesHandlers.add(LocalKeyValueStoreCreator(localResourceHolder, stageService))
+        localCreateResourcesHandlers.add(LocalNotificationTopicCreator(localResourceHolder, stageService))
+        localCreateResourcesHandlers.add(LocalQueueCreator(localResourceHolder, stageService))
 
         val classes = serviceScanner.getSubTypesOf(LocalCreateResourcesHandler::class.java)
         val handlers = classes.map { clazz ->
-            val constructor = clazz.getConstructor(LocalResourceHolder::class.java, String::class.java)
-            constructor.newInstance(localResourceHolder, stage)
+            val constructor = clazz.getConstructor(LocalResourceHolder::class.java, StageService::class.java)
+            constructor.newInstance(localResourceHolder, stageService)
         }
         localCreateResourcesHandlers.addAll(handlers)
     }
 
-    private fun initialiseUseResourceHandlers() {
-        localUseResourceHandlers.add(LocalUsesBasicFunctionHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesDocumentStoreHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesFileStorageClientHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesKeyValueStoreHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesNotificationTopicHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesQueueHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesRelationalDatabaseHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalEnvironmentVariableHandler(localResourceHolder, stage))
-        localUseResourceHandlers.add(LocalUsesWebSocketHandler(localResourceHolder, stage))
+    private fun initialiseUseResourceHandlers(stageService: StageService) {
+        localUseResourceHandlers.add(LocalUsesBasicFunctionHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesDocumentStoreHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesFileStorageClientHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesKeyValueStoreHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesNotificationTopicHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesQueueHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesRelationalDatabaseHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalEnvironmentVariableHandler(localResourceHolder, stageService))
+        localUseResourceHandlers.add(LocalUsesWebSocketHandler(localResourceHolder, stageService))
     }
 
     private constructor(stageParam: String = "dev", httpPort: Int = 8080, webSocketPort: Int = 8081, classes: Array<out Class<out Any>>) {
@@ -97,9 +103,11 @@ class LocalNimbusDeployment {
         this.httpPort = httpPort
         this.webSocketPort = webSocketPort
 
-        initialiseFunctionHandlers()
-        initialiseResourceCreators()
-        initialiseUseResourceHandlers()
+        val stageService = StageService(stageParam, userConfig.defaultStages.contains(stage))
+
+        initialiseFunctionHandlers(stageService)
+        initialiseResourceCreators(stageService)
+        initialiseUseResourceHandlers(stageService)
 
         val allClasses = mutableListOf<Class<*>>()
         allClasses.addAll(classes)
@@ -133,7 +141,7 @@ class LocalNimbusDeployment {
     }
 
 
-    private constructor(packageName: String, stageParam: String = "dev", httpPort: Int = 8080, webSocketPort: Int = 8081) {
+    private constructor(packageName: String, stageParam: String = NimbusConstants.stage, httpPort: Int = 8080, webSocketPort: Int = 8081) {
         instance = this
         stage = stageParam
         localResourceHolder = LocalResourceHolder(stage)
@@ -141,9 +149,11 @@ class LocalNimbusDeployment {
         this.httpPort = httpPort
         this.webSocketPort = webSocketPort
 
-        initialiseFunctionHandlers()
-        initialiseResourceCreators()
-        initialiseUseResourceHandlers()
+        val stageService = StageService(stageParam, userConfig.defaultStages.contains(stage))
+
+        initialiseFunctionHandlers(stageService)
+        initialiseResourceCreators(stageService)
+        initialiseUseResourceHandlers(stageService)
 
         val reflections = Reflections(ConfigurationBuilder()
                 .setScanners(SubTypesScanner(false))

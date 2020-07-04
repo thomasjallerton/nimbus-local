@@ -6,11 +6,12 @@ import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
 import com.nimbusframework.nimbuslocal.deployment.function.ServerlessFunction
 import com.nimbusframework.nimbuslocal.deployment.function.information.BasicFunctionInformation
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 import java.lang.reflect.Method
 
 class LocalBasicFunctionHandler(
         private val localResourceHolder: LocalResourceHolder,
-        private val stage: String
+        private val stageService: StageService
 ) : LocalFunctionHandler(localResourceHolder) {
     override fun handleMethod(clazz: Class<out Any>, method: Method): Boolean {
 
@@ -19,15 +20,14 @@ class LocalBasicFunctionHandler(
 
         val functionIdentifier = FunctionIdentifier(clazz.canonicalName, method.name)
 
-        for (basicFunction in basicServerlessFunctions) {
-            if (basicFunction.stages.contains(stage)) {
-                val invokeOn = clazz.getConstructor().newInstance()
+        val annotation = stageService.annotationForStage(basicServerlessFunctions) {annotation -> annotation.stages}
+        if (annotation != null) {
+            val invokeOn = clazz.getConstructor().newInstance()
 
-                val basicMethod = BasicFunction(method, invokeOn)
-                val basicFunctionInformation = BasicFunctionInformation(basicFunction.cron)
-                localResourceHolder.functions[functionIdentifier] = ServerlessFunction(basicMethod, basicFunctionInformation)
-                localResourceHolder.basicMethods[functionIdentifier] = basicMethod
-            }
+            val basicMethod = BasicFunction(method, invokeOn)
+            val basicFunctionInformation = BasicFunctionInformation(annotation.cron)
+            localResourceHolder.functions[functionIdentifier] = ServerlessFunction(basicMethod, basicFunctionInformation)
+            localResourceHolder.basicMethods[functionIdentifier] = basicMethod
         }
         return true
     }

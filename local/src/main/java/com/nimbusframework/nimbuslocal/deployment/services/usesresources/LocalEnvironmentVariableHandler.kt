@@ -3,26 +3,27 @@ package com.nimbusframework.nimbuslocal.deployment.services.usesresources
 import com.nimbusframework.nimbuscore.annotations.function.EnvironmentVariable
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionEnvironment
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 import java.lang.reflect.Method
 
 class LocalEnvironmentVariableHandler(
         localResourceHolder: LocalResourceHolder,
-        private val stage: String
+        private val stageService: StageService
 ): LocalUsesResourcesHandler(localResourceHolder) {
 
     override fun handleUsesResources(clazz: Class<out Any>, method: Method, functionEnvironment: FunctionEnvironment) {
         val environmentVariables = method.getAnnotationsByType(EnvironmentVariable::class.java)
 
-        for (environmentVariable in environmentVariables) {
-            if (environmentVariable.stages.contains(stage)) {
-                if (environmentVariable.testValue == "NIMBUS_NOT_SET") {
-                    val envValue = handleEnvironmentVariable(environmentVariable.value)
-                    functionEnvironment.addEnvironmentVariable(environmentVariable.key, envValue)
-                } else {
-                    functionEnvironment.addEnvironmentVariable(environmentVariable.key, environmentVariable.testValue)
-                }
+        val annotation = stageService.annotationForStage(environmentVariables) { annotation -> annotation.stages}
+        if (annotation != null) {
+            if (annotation.testValue == "NIMBUS_NOT_SET") {
+                val envValue = handleEnvironmentVariable(annotation.value)
+                functionEnvironment.addEnvironmentVariable(annotation.key, envValue)
+            } else {
+                functionEnvironment.addEnvironmentVariable(annotation.key, annotation.testValue)
             }
         }
+
     }
 
     private fun handleEnvironmentVariable(value: String): String {

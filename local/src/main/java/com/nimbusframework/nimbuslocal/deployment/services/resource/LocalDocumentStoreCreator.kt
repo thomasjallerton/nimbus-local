@@ -4,23 +4,22 @@ import com.nimbusframework.nimbuscore.annotations.document.DocumentStoreDefiniti
 import com.nimbusframework.nimbuscore.clients.document.DocumentStoreAnnotationService
 import com.nimbusframework.nimbuslocal.deployment.document.LocalDocumentStore
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 
 class LocalDocumentStoreCreator(
         private val localResourceHolder: LocalResourceHolder,
-        private val stage: String
+        private val stageService: StageService
 ): LocalCreateResourcesHandler {
 
     override fun createResource(clazz: Class<out Any>) {
         val documentStoreAnnotations = clazz.getAnnotationsByType(DocumentStoreDefinition::class.java)
 
-        for (documentStoreAnnotation in documentStoreAnnotations) {
-            if (documentStoreAnnotation.stages.contains(stage)) {
-                val tableName = DocumentStoreAnnotationService.getTableName(clazz, stage)
-                val localStore = LocalDocumentStore(clazz, tableName, stage)
+        if (stageService.isResourceDeployedInStage(documentStoreAnnotations) {annotation -> annotation.stages}) {
+            val tableName = DocumentStoreAnnotationService.getTableName(clazz, stageService.deployingStage)
+            val localStore = LocalDocumentStore(clazz, tableName, stageService.deployingStage)
 
-                localResourceHolder.webDocumentStores[tableName] = localStore
-                localResourceHolder.documentStores[clazz] = localStore
-            }
+            localResourceHolder.webDocumentStores[tableName] = localStore
+            localResourceHolder.documentStores[clazz] = localStore
         }
     }
 
