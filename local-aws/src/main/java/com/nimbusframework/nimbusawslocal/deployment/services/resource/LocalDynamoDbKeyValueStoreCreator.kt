@@ -4,29 +4,29 @@ import com.nimbusframework.nimbusaws.annotation.annotations.keyvalue.DynamoDbKey
 import com.nimbusframework.nimbusaws.clients.keyvalue.DynamoDbKeyValueStoreAnnotationService
 import com.nimbusframework.nimbuslocal.deployment.keyvalue.LocalKeyValueStore
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 import com.nimbusframework.nimbuslocal.deployment.services.resource.LocalCreateResourcesHandler
 
 class LocalDynamoDbKeyValueStoreCreator(
         private val localResourceHolder: LocalResourceHolder,
-        private val stage: String
+        private val stageService: StageService
 ): LocalCreateResourcesHandler {
 
     override fun createResource(clazz: Class<out Any>) {
         val keyValueStoreAnnotations = clazz.getAnnotationsByType(DynamoDbKeyValueStore::class.java)
 
-        for (keyValueStoreAnnotation in keyValueStoreAnnotations) {
-            if (keyValueStoreAnnotation.stages.contains(stage)) {
-                val tableName = DynamoDbKeyValueStoreAnnotationService.getTableName(clazz, stage)
-                val keyTypeAndName = DynamoDbKeyValueStoreAnnotationService.getKeyNameAndType(clazz, stage)
+        val deployingAnnotation = stageService.annotationForStage(keyValueStoreAnnotations) {keyValueStore -> keyValueStore.stages }
+        if (deployingAnnotation != null) {
+            val tableName = DynamoDbKeyValueStoreAnnotationService.getTableName(clazz, stageService.deployingStage)
+            val keyTypeAndName = DynamoDbKeyValueStoreAnnotationService.getKeyNameAndType(clazz, stageService.deployingStage)
 
-                localResourceHolder.keyValueStores[clazz] = LocalKeyValueStore(
-                        keyValueStoreAnnotation.keyType.java,
-                        clazz,
-                        keyTypeAndName.second,
-                        keyTypeAndName.first,
-                        tableName,
-                        stage)
-            }
+            localResourceHolder.keyValueStores[clazz] = LocalKeyValueStore(
+                    deployingAnnotation.keyType.java,
+                    clazz,
+                    keyTypeAndName.second,
+                    keyTypeAndName.first,
+                    tableName,
+                    stageService.deployingStage)
         }
     }
 }

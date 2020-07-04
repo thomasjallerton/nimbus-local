@@ -5,23 +5,23 @@ import com.nimbusframework.nimbuscore.permissions.PermissionType
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionEnvironment
 import com.nimbusframework.nimbuslocal.deployment.function.permissions.BasicFunctionPermission
 import com.nimbusframework.nimbuslocal.deployment.services.LocalResourceHolder
+import com.nimbusframework.nimbuslocal.deployment.services.StageService
 import java.lang.reflect.Method
 
 class LocalUsesBasicFunctionHandler(
         localResourceHolder: LocalResourceHolder,
-        private val stage: String
+        private val stageService: StageService
 ): LocalUsesResourcesHandler(localResourceHolder) {
 
     override fun handleUsesResources(clazz: Class<out Any>, method: Method, functionEnvironment: FunctionEnvironment) {
         val usesBasicFunctionClients = method.getAnnotationsByType(UsesBasicServerlessFunction::class.java)
 
-        for (usesBasicFunctionClient in usesBasicFunctionClients) {
-            if (usesBasicFunctionClient.stages.contains(stage)) {
-                functionEnvironment.addPermission(PermissionType.BASIC_FUNCTION, BasicFunctionPermission(
-                        usesBasicFunctionClient.targetClass.java,
-                        usesBasicFunctionClient.methodName
-                ))
-            }
+        val annotation = stageService.annotationForStage(usesBasicFunctionClients) { annotation -> annotation.stages}
+        if (annotation != null) {
+            functionEnvironment.addPermission(PermissionType.BASIC_FUNCTION, BasicFunctionPermission(
+                    annotation.targetClass.java,
+                    annotation.methodName
+            ))
         }
     }
 
