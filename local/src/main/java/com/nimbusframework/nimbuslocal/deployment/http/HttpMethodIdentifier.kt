@@ -15,7 +15,7 @@ data class HttpMethodIdentifier(
         if (!parameterNames.none()) {
             for (name in parameterNames) {
                 pathParameterNames.add(name.groupValues[1])
-                path = path.replace(name.value, "([^\\/]+)")
+                path = path.replace(name.value, "([^\\/?]+)")
             }
             path = path.replace("/", "\\/")
         }
