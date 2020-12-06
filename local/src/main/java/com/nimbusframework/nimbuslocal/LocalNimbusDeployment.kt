@@ -2,7 +2,13 @@ package com.nimbusframework.nimbuslocal
 
 import com.nimbusframework.nimbusaws.annotation.services.ReadUserConfigService
 import com.nimbusframework.nimbuscore.annotations.NimbusConstants
+import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucketDefinition
+import com.nimbusframework.nimbuscore.annotations.notification.NotificationTopicDefinition
+import com.nimbusframework.nimbuscore.annotations.queue.QueueDefinition
 import com.nimbusframework.nimbuscore.clients.ClientBinder
+import com.nimbusframework.nimbuscore.clients.file.FileStorageBucketNameAnnotationService
+import com.nimbusframework.nimbuscore.clients.notification.NotificationTopicAnnotationService
+import com.nimbusframework.nimbuscore.clients.queue.QueueIdAnnotationService
 import com.nimbusframework.nimbuscore.eventabstractions.RequestContext
 import com.nimbusframework.nimbuscore.persisted.FileUploadDescription
 import com.nimbusframework.nimbuslocal.clients.LocalInternalClientBuilder
@@ -319,6 +325,11 @@ class LocalNimbusDeployment {
         }
     }
 
+    fun getLocalFileStorage(bucketClass: Class<*>): LocalFileStorage {
+        val bucketName = FileStorageBucketNameAnnotationService.getBucketName(bucketClass, stage)
+        return getLocalFileStorage(bucketName)
+    }
+
     fun <T> getDocumentStore(clazz: Class<T>): LocalDocumentStore<T> {
         val documentStores = localResourceHolder.documentStores
 
@@ -350,6 +361,11 @@ class LocalNimbusDeployment {
         }
     }
 
+    fun getQueue(queueClass: Class<*>): LocalQueue {
+        val queueId = QueueIdAnnotationService.getQueueId(queueClass, stage)
+        return getQueue(queueId)
+    }
+
     fun getNotificationTopic(topic: String): LocalNotificationTopic {
         val notificationTopics = localResourceHolder.notificationTopics
 
@@ -358,6 +374,11 @@ class LocalNimbusDeployment {
         } else {
             throw ResourceNotFoundException()
         }
+    }
+
+    fun getNotificationTopic(notificationTopicClass: Class<*>): LocalNotificationTopic {
+        val topicName = NotificationTopicAnnotationService.getTopicName(notificationTopicClass, stage)
+        return getNotificationTopic(topicName)
     }
 
     fun <T> getMethod(clazz: Class<T>, methodName: String): ServerlessMethod {
@@ -373,9 +394,9 @@ class LocalNimbusDeployment {
 
     fun sendHttpRequest(request: HttpRequest): Any? {
         val localHttpMethods = localResourceHolder.httpMethods
-
+        val mainPath = request.path.split("?")[0]
         for ((identifier, method) in localHttpMethods) {
-            if (identifier.matches(request.path, request.method)) {
+            if (identifier.matches(mainPath, request.method)) {
                 return method.invoke(request, identifier)
             }
         }
