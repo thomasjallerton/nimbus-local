@@ -20,7 +20,7 @@ class NotificationHandlerLocalTest: AnnotationSpec() {
 
         assertEquals(0, notificationFunction.timesInvoked)
 
-        val testTopic = localDeployment.getNotificationTopic("Topic")
+        val testTopic = localDeployment.getNotificationTopic(NotificationTopic::class.java)
         testTopic.notifyJson(testPerson)
 
         assertEquals(1, notificationFunction.timesInvoked)

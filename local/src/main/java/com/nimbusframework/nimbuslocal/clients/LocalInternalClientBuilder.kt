@@ -1,7 +1,5 @@
 package com.nimbusframework.nimbuslocal.clients
 
-import com.nimbusframework.nimbuscore.annotations.file.FileStorageBucketDefinition
-import com.nimbusframework.nimbuscore.annotations.notification.NotificationTopicDefinition
 import com.nimbusframework.nimbuscore.clients.database.DatabaseClient
 import com.nimbusframework.nimbuscore.clients.database.InternalClientBuilder
 import com.nimbusframework.nimbuscore.clients.document.DocumentStoreClient
@@ -40,11 +38,7 @@ object LocalInternalClientBuilder: InternalClientBuilder {
     }
 
     override fun getFileStorageClient(bucketClass: Class<*>, stage: String): FileStorageClient {
-        return FileStorageClientLocal(FileStorageBucketNameAnnotationService.getBucketName(bucketClass, stage))
-    }
-
-    override fun getFileStorageClient(bucketName: String, stage: String): FileStorageClient {
-        return FileStorageClientLocal(bucketName)
+        return FileStorageClientLocal(bucketClass, stage)
     }
 
     override fun <K, V> getKeyValueStoreClient(key: Class<K>, value: Class<V>, stage: String): KeyValueStoreClient<K, V> {
@@ -52,19 +46,11 @@ object LocalInternalClientBuilder: InternalClientBuilder {
     }
 
     override fun getNotificationClient(topicClass: Class<*>, stage: String): NotificationClient {
-        return NotificationClientLocal(NotificationTopicAnnotationService.getTopicName(topicClass, stage))
-    }
-
-    override fun getNotificationClient(topic: String): NotificationClient {
-        return NotificationClientLocal(topic)
+        return NotificationClientLocal(topicClass, stage)
     }
 
     override fun getQueueClient(queueClass: Class<*>, stage: String): QueueClient {
-        return QueueClientLocal(QueueIdAnnotationService.getQueueId(queueClass, stage))
-    }
-
-    override fun getQueueClient(id: String): QueueClient {
-        return QueueClientLocal(id)
+        return QueueClientLocal(queueClass, stage)
     }
 
     override fun getServerlessFunctionWebSocketClient(): ServerlessFunctionWebSocketClient {

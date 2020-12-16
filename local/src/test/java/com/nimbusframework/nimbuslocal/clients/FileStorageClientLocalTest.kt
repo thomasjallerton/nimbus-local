@@ -19,7 +19,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
 
@@ -38,7 +38,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
         fileStorage.deleteFile(path
@@ -58,7 +58,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "shouldnotexist"
 
         fileStorage.deleteFile(path)

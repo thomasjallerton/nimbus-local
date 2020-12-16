@@ -14,9 +14,9 @@ class NotificationClientLocalTest: AnnotationSpec() {
     @Test
     fun subscribingWorksAndSendingMessageWorks() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("Topic")
+        val topic = localDeployment.getNotificationTopic(NotificationTopic::class.java)
 
-        val localClient = ClientBuilder.getNotificationClient("Topic")
+        val localClient = ClientBuilder.getNotificationClient(NotificationTopic::class.java)
 
         localClient.createSubscription(Protocol.HTTP, "www.test.com")
         localClient.notify("{\"name\":\"Tom\", \"age\":15}")
@@ -30,7 +30,7 @@ class NotificationClientLocalTest: AnnotationSpec() {
     @Test
     fun subscribingWorksAndSendingMessageWorksWithObject() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("Topic")
+        val topic = localDeployment.getNotificationTopic(NotificationTopic::class.java)
         val person = Person("Thomas", 21)
 
         val localClient = ClientBuilder.getNotificationClient(NotificationTopic::class.java)
@@ -47,7 +47,7 @@ class NotificationClientLocalTest: AnnotationSpec() {
     @Test
     fun unsubscribeWorks() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(NotificationTopic::class.java, ExampleNotificationHandler::class.java)
-        val topic = localDeployment.getNotificationTopic("Topic")
+        val topic = localDeployment.getNotificationTopic(NotificationTopic::class.java)
 
         val localClient = ClientBuilder.getNotificationClient(NotificationTopic::class.java)
 

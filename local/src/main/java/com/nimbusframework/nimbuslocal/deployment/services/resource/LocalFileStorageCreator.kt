@@ -13,7 +13,7 @@ class LocalFileStorageCreator(
         private val localResourceHolder: LocalResourceHolder,
         private val httpPort: Int,
         private val variableSubstitution: MutableMap<String, String>,
-        private val fileUploadDetails: MutableMap<String, MutableList<FileUploadDescription>>,
+        private val fileUploadDetails: MutableMap<Class<*>, MutableList<FileUploadDescription>>,
         private val stageService: StageService
 ) : LocalCreateResourcesHandler {
 
@@ -45,8 +45,7 @@ class LocalFileStorageCreator(
 
         val fileUpload = stageService.annotationForStage(clazz.getAnnotationsByType(FileUpload::class.java)) { annotation -> annotation.stages}
         if (fileUpload != null) {
-            val bucketName = FileStorageBucketNameAnnotationService.getBucketName(fileUpload.fileStorageBucket.java, stageService.deployingStage)
-            val bucketFiles = fileUploadDetails.getOrPut(bucketName) { mutableListOf() }
+            val bucketFiles = fileUploadDetails.getOrPut(fileUpload.fileStorageBucket.java) { mutableListOf() }
             val description = FileUploadDescription(fileUpload.localPath, fileUpload.targetPath, fileUpload.substituteNimbusVariables)
             bucketFiles.add(description)
         }

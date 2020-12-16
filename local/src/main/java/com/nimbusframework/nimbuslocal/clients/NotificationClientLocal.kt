@@ -1,12 +1,14 @@
 package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.clients.notification.NotificationClient
+import com.nimbusframework.nimbuscore.clients.notification.NotificationTopicAnnotationService
 import com.nimbusframework.nimbuscore.clients.notification.Protocol
 import com.nimbusframework.nimbuscore.permissions.PermissionType
 
-internal class NotificationClientLocal(private val topic: String): NotificationClient, LocalClient() {
+internal class NotificationClientLocal(topicClass: Class<*>, stage: String): NotificationClient, LocalClient() {
 
-    private val notificationTopic = localNimbusDeployment.getNotificationTopic(topic)
+    private val topic = NotificationTopicAnnotationService.getTopicName(topicClass, stage)
+    private val notificationTopic = localNimbusDeployment.getNotificationTopic(topicClass)
 
     override fun canUse(): Boolean {
         return checkPermissions(PermissionType.NOTIFICATION_TOPIC, topic)

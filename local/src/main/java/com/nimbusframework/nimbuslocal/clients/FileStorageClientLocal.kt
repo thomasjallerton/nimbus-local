@@ -1,16 +1,18 @@
 package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.clients.file.FileInformation
+import com.nimbusframework.nimbuscore.clients.file.FileStorageBucketNameAnnotationService
 import com.nimbusframework.nimbuscore.clients.file.FileStorageClient
 import com.nimbusframework.nimbuscore.permissions.PermissionType
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import java.io.File
 import java.io.InputStream
 
-class FileStorageClientLocal(private val bucketName: String): FileStorageClient, LocalClient() {
+class FileStorageClientLocal(bucketClass: Class<*>, stage: String): FileStorageClient, LocalClient() {
 
+    private val bucketName = FileStorageBucketNameAnnotationService.getBucketName(bucketClass, stage)
     private val localNimbusClient = LocalNimbusDeployment.getInstance()
-    private val fileStorage = localNimbusClient.getLocalFileStorage(bucketName)
+    private val fileStorage = localNimbusClient.getLocalFileStorage(bucketClass)
 
     override fun canUse(): Boolean {
         return checkPermissions(PermissionType.FILE_STORAGE, bucketName)

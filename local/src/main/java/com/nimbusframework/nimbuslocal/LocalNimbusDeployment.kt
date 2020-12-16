@@ -49,7 +49,7 @@ class LocalNimbusDeployment {
     private val localUseResourceHandlers: MutableList<LocalUsesResourcesHandler> = mutableListOf()
 
     private val variableSubstitution: MutableMap<String, String> = mutableMapOf()
-    private val fileUploadDetails: MutableMap<String, MutableList<FileUploadDescription>> = mutableMapOf()
+    private val fileUploadDetails: MutableMap<Class<*>, MutableList<FileUploadDescription>> = mutableMapOf()
 
     private val userConfig = ReadUserConfigService().readUserConfig()
 
@@ -102,7 +102,7 @@ class LocalNimbusDeployment {
         localUseResourceHandlers.add(LocalUsesWebSocketHandler(localResourceHolder, stageService))
     }
 
-    private constructor(stageParam: String = "dev", httpPort: Int = 8080, webSocketPort: Int = 8081, classes: Array<out Class<out Any>>) {
+    private constructor(stageParam: String = NimbusConstants.stage, httpPort: Int = 8080, webSocketPort: Int = 8081, classes: Array<out Class<out Any>>) {
         instance = this
         stage = stageParam
         localResourceHolder = LocalResourceHolder(stage)
@@ -351,26 +351,12 @@ class LocalNimbusDeployment {
         }
     }
 
-    fun getQueue(id: String): LocalQueue {
-        val localQueues = localResourceHolder.queues
-
-        if (localQueues.containsKey(id)) {
-            return localQueues[id]!!
-        } else {
-            throw ResourceNotFoundException()
-        }
-    }
-
     fun getQueue(queueClass: Class<*>): LocalQueue {
         val queueId = QueueIdAnnotationService.getQueueId(queueClass, stage)
-        return getQueue(queueId)
-    }
+        val localQueues = localResourceHolder.queues
 
-    fun getNotificationTopic(topic: String): LocalNotificationTopic {
-        val notificationTopics = localResourceHolder.notificationTopics
-
-        if (notificationTopics.containsKey(topic)) {
-            return notificationTopics[topic]!!
+        if (localQueues.containsKey(queueId)) {
+            return localQueues[queueId]!!
         } else {
             throw ResourceNotFoundException()
         }
@@ -378,7 +364,13 @@ class LocalNimbusDeployment {
 
     fun getNotificationTopic(notificationTopicClass: Class<*>): LocalNotificationTopic {
         val topicName = NotificationTopicAnnotationService.getTopicName(notificationTopicClass, stage)
-        return getNotificationTopic(topicName)
+        val notificationTopics = localResourceHolder.notificationTopics
+
+        if (notificationTopics.containsKey(topicName)) {
+            return notificationTopics[topicName]!!
+        } else {
+            throw ResourceNotFoundException()
+        }
     }
 
     fun <T> getMethod(clazz: Class<T>, methodName: String): ServerlessMethod {
