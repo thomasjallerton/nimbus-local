@@ -52,8 +52,7 @@ class FileBucketApiResource(private val httpMethod: HttpMethod) : WebResource(ar
                         val client = localNimbusDeployment.getLocalFileStorage(bucketName)
                         val files = client.listFiles()
                         val filesJson = objectMapper.writeValueAsString(files)
-                        response.outputStream.bufferedWriter().use {it.write(filesJson)
-                        }
+                        response.outputStream.bufferedWriter().use { it.write(filesJson) }
                     }
                 }
 
