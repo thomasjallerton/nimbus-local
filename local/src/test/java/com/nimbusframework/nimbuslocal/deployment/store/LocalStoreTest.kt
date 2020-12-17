@@ -3,9 +3,9 @@ package com.nimbusframework.nimbuslocal.deployment.store
 import com.nimbusframework.nimbuscore.clients.store.conditions.function.AttributeExists
 import com.nimbusframework.nimbuscore.exceptions.StoreConditionException
 import com.nimbusframework.nimbuslocal.exampleModels.StoreItem
-import io.kotlintest.matchers.maps.shouldContainExactly
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.maps.shouldContainExactly
 
 internal class LocalStoreTest : AnnotationSpec() {
 

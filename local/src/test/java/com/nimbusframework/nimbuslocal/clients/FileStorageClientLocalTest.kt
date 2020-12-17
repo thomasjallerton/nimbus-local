@@ -4,8 +4,7 @@ import com.nimbusframework.nimbuscore.eventabstractions.FileStorageEvent
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleFileStorageHandler
 import com.nimbusframework.nimbuslocal.exampleModels.Bucket
-import io.kotlintest.specs.AnnotationSpec
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.AnnotationSpec
 import java.io.File
 import kotlin.test.assertEquals
 

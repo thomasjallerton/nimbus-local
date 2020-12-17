@@ -8,8 +8,8 @@ import com.nimbusframework.nimbuscore.clients.store.conditions.variable.NumericV
 import com.nimbusframework.nimbuscore.clients.store.conditions.variable.StringVariable
 import com.nimbusframework.nimbuslocal.exampleModels.Document
 import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.matchers.shouldBe
+import io.kotest.core.spec.style.AnnotationSpec
 
 internal class ConditionProcessorTest : AnnotationSpec() {
 

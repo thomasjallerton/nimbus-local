@@ -4,7 +4,7 @@ import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
 import com.nimbusframework.nimbuslocal.exampleModels.Person
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleKeyValueHandler
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 

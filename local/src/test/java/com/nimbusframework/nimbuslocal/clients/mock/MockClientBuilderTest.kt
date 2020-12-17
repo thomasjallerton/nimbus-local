@@ -2,8 +2,8 @@ package com.nimbusframework.nimbuslocal.clients.mock
 
 import com.nimbusframework.nimbuscore.clients.queue.QueueClient
 import com.nimbusframework.nimbuslocal.exampleModels.Queue
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.StringSpec
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import io.mockk.mockk
 
 class MockClientBuilderTest : StringSpec({

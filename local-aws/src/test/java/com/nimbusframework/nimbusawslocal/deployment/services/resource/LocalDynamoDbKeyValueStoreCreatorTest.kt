@@ -1,10 +1,9 @@
 package com.nimbusframework.nimbusawslocal.deployment.services.resource
 
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
-import exampleresources.DynamoDbDocument
 import exampleresources.DynamoDbKeyValue
-import io.kotlintest.shouldNotBe
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldNotBe
 
 internal class LocalDynamoDbKeyValueStoreCreatorTest: AnnotationSpec() {
 
