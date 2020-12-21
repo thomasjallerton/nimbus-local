@@ -11,7 +11,7 @@ class BucketTwo {
     @AfterDeployment
     @UsesFileStorageBucket(fileStorageBucket = BucketTwo::class)
     fun uploadFile() {
-        val client = ClientBuilder.getFileStorageClient("BucketTwo")
+        val client = ClientBuilder.getFileStorageClient(BucketTwo::class.java)
         client.saveFile("test.txt", "HELLO WORLD")
     }
 }

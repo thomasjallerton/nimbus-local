@@ -2,13 +2,12 @@ package com.nimbusframework.nimbuslocal.clients
 
 import com.nimbusframework.nimbuscore.clients.ClientBuilder
 import com.nimbusframework.nimbuscore.clients.store.conditions.function.AttributeExists
-import com.nimbusframework.nimbuscore.clients.store.conditions.function.AttributeNotExists
 import com.nimbusframework.nimbuscore.exceptions.StoreConditionException
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.deployment.store.LocalStore
 import com.nimbusframework.nimbuslocal.exampleModels.StoreItem
-import io.kotlintest.shouldBe
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
+import io.kotest.matchers.shouldBe
 
 internal class TransactionalClientLocalTest: AnnotationSpec() {
 

@@ -3,7 +3,7 @@ package com.nimbusframework.nimbuslocal.clients
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleModels.Document
 import com.nimbusframework.nimbuslocal.exampleModels.Person
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

@@ -4,8 +4,7 @@ import com.nimbusframework.nimbuscore.eventabstractions.FileStorageEvent
 import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleFileStorageHandler
 import com.nimbusframework.nimbuslocal.exampleModels.Bucket
-import io.kotlintest.specs.AnnotationSpec
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.AnnotationSpec
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -19,7 +18,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
 
@@ -38,7 +37,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "newFile"
         fileStorage.saveFile(path, "testContent")
         fileStorage.deleteFile(path
@@ -58,7 +57,7 @@ class FileStorageClientLocalTest: AnnotationSpec() {
 
         assertEquals(0, method.timesInvoked)
 
-        val fileStorage = localDeployment.getLocalFileStorage("Test")
+        val fileStorage = localDeployment.getLocalFileStorage(Bucket::class.java)
         val path = "testdir" + File.separator + "shouldnotexist"
 
         fileStorage.deleteFile(path)

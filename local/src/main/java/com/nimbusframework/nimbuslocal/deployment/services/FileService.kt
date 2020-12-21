@@ -17,9 +17,9 @@ class FileService(
         tempDir + File.separator + "nimbus" + File.separator
     }
 
-    fun handleUploadingFile(bucketUploads: Map<String, List<FileUploadDescription>>) {
-        for ((bucketName, fileUploads) in bucketUploads) {
-            val fileStorageClient = ClientBuilder.getFileStorageClient(bucketName)
+    fun handleUploadingFile(bucketUploads: Map<Class<*>, List<FileUploadDescription>>) {
+        for ((bucketClass, fileUploads) in bucketUploads) {
+            val fileStorageClient = ClientBuilder.getFileStorageClient(bucketClass)
 
             for ((localFile, targetFile, substituteVariables) in fileUploads) {
                 val file = File(localFile)

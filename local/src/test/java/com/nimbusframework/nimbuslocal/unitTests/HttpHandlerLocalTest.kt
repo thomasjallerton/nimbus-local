@@ -6,7 +6,7 @@ import com.nimbusframework.nimbuslocal.ResourceNotFoundException
 import com.nimbusframework.nimbuslocal.deployment.http.HttpRequest
 import com.nimbusframework.nimbuslocal.exampleModels.Person
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleHttpHandler
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

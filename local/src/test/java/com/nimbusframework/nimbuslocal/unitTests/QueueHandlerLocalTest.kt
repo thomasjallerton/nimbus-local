@@ -4,7 +4,7 @@ import com.nimbusframework.nimbuslocal.LocalNimbusDeployment
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleQueueHandler
 import com.nimbusframework.nimbuslocal.exampleModels.KeyValue
 import com.nimbusframework.nimbuslocal.exampleModels.Person
-import io.kotlintest.specs.AnnotationSpec
+import io.kotest.core.spec.style.AnnotationSpec
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -15,7 +15,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingOneItemToQueueTriggersFunction() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize1")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize1Queue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handle")
         assertEquals(0, queueFunction.timesInvoked)
@@ -30,7 +30,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingTwoItemsToQueueTriggersFunctionTwice() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize1")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize1Queue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handle")
         assertEquals(0, queueFunction.timesInvoked)
@@ -44,7 +44,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingOneItemToQueueTriggersFunctionOnceLargerBatchsize() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize2Batch")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize2BatchQueue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handleBatchSize2Batched")
         assertEquals(0, queueFunction.timesInvoked)
@@ -57,7 +57,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingTwoItemsToQueueTriggersFunctionOnceLargerBatchsize() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize2Batch")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize2BatchQueue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handleBatchSize2Batched")
         assertEquals(0, queueFunction.timesInvoked)
@@ -70,7 +70,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingOneItemToQueueTriggersIndividualFunctionOnceLargerBatchsize() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize2Individual")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize2IndividualQueue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handleBatchSize2Individual")
         assertEquals(0, queueFunction.timesInvoked)
@@ -83,7 +83,7 @@ class QueueHandlerLocalTest: AnnotationSpec() {
     @Test
     fun addingTwoItemsToQueueTriggersIndividualFunctionOnceLargerBatchsize() {
         val localDeployment = LocalNimbusDeployment.getNewInstance(ExampleQueueHandler::class.java)
-        val queue = localDeployment.getQueue("BatchSize2Individual")
+        val queue = localDeployment.getQueue(ExampleQueueHandler.BatchSize2IndividualQueue::class.java)
 
         val queueFunction = localDeployment.getMethod(ExampleQueueHandler::class.java, "handleBatchSize2Individual")
         assertEquals(0, queueFunction.timesInvoked)
