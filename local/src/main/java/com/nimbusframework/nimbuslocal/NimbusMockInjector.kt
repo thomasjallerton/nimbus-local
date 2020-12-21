@@ -19,13 +19,14 @@ import com.nimbusframework.nimbuslocal.clients.mock.MockClientBuilder
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
 
 class NimbusMockInjector(
-    val stage: String
+    private val stage: String
 ) {
 
     constructor(): this(NimbusConstants.stage)
 
     private val queueClients: MutableMap<String, QueueClient> = mutableMapOf()
     private val basicFunctionClients: MutableMap<FunctionIdentifier, BasicServerlessFunctionClient> = mutableMapOf()
+    private val basicFunctionInterfaces: MutableMap<Class<*>, Any> = mutableMapOf()
     private val keyValueStoreClients: MutableMap<Class<*>, KeyValueStoreClient<out Any, out Any>> = mutableMapOf()
     private val documentStoreClients: MutableMap<Class<*>, DocumentStoreClient<out Any>> = mutableMapOf()
     private val fileStorageClients: MutableMap<String, FileStorageClient> = mutableMapOf()
@@ -45,7 +46,17 @@ class NimbusMockInjector(
         return this
     }
 
-    fun <K: Any, V: Any> withKeyValueStoreClient(key: Class<K>, value: Class<V>, keyValueStoreClient: KeyValueStoreClient<K, V>): NimbusMockInjector {
+    fun <T: Any> withBasicFunctionInterface(handlerClass: Class<T>, basicFunctionInterface: T): NimbusMockInjector {
+        basicFunctionInterfaces[handlerClass] = basicFunctionInterface
+        return this
+    }
+
+    fun <T: Any> withBasicFunctionInterface(handlerClass: Class<T>): NimbusMockInjector {
+        basicFunctionInterfaces[handlerClass] = handlerClass.getDeclaredConstructor().newInstance() as T
+        return this
+    }
+
+    fun <K: Any, V: Any> withKeyValueStoreClient(value: Class<V>, keyValueStoreClient: KeyValueStoreClient<K, V>): NimbusMockInjector {
         keyValueStoreClients[value] = keyValueStoreClient
         return this
     }
@@ -89,6 +100,7 @@ class NimbusMockInjector(
         val clientBuilder = MockClientBuilder(
             queueClients,
             basicFunctionClients,
+            basicFunctionInterfaces,
             keyValueStoreClients,
             documentStoreClients,
             fileStorageClients,

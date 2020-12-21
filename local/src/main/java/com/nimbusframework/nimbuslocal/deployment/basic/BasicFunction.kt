@@ -41,7 +41,7 @@ class BasicFunction(private val method: Method, private val invokeOn: Any)
 
         val event = BasicEvent()
 
-        val returnValue =when {
+        val returnValue = when {
             params.isEmpty() -> method.invoke(invokeOn)
             params.size == 1 && eventIndex == 0 -> method.invoke(invokeOn, event)
             params.size == 1 -> method.invoke(invokeOn, param)

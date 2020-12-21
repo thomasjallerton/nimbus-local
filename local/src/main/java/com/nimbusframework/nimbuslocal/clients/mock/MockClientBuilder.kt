@@ -30,6 +30,7 @@ import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 class MockClientBuilder(
     private val queueClients: Map<String, QueueClient> = mapOf(),
     private val basicFunctionClients: Map<FunctionIdentifier, BasicServerlessFunctionClient> = mapOf(),
+    private val basicFunctionInterfaces: Map<Class<*>, Any> = mapOf(),
     private val keyValueStoreClients: Map<Class<*>, KeyValueStoreClient<out Any, out Any>> = mapOf(),
     private val documentStoreClients: Map<Class<*>, DocumentStoreClient<out Any>> = mapOf(),
     private val fileStorageClients: Map<String, FileStorageClient> = mapOf(),
@@ -42,6 +43,10 @@ class MockClientBuilder(
 
     override fun getBasicServerlessFunctionClient(handlerClass: Class<*>, functionName: String): BasicServerlessFunctionClient {
         return basicFunctionClients[FunctionIdentifier(handlerClass, functionName)] ?: error("Missing mock for BasicServerlessFunctionClient")
+    }
+
+    override fun <T> getBasicServerlessFunctionInterface(handlerClass: Class<T>): T {
+        return basicFunctionInterfaces[handlerClass] as T? ?: error("Missing mock for function interface ${handlerClass.simpleName}")
     }
 
     override fun <T> getDatabaseClient(databaseObject: Class<T>): DatabaseClient {

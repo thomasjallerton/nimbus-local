@@ -13,6 +13,8 @@ import com.nimbusframework.nimbuscore.clients.websocket.ServerlessFunctionWebSoc
 import com.nimbusframework.nimbuslocal.deployment.function.FunctionIdentifier
 import com.nimbusframework.nimbuslocal.exampleHandlers.ExampleBasicFunctionHandler
 import com.nimbusframework.nimbuslocal.exampleModels.*
+import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.throwables.shouldThrowMessage
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.matchers.shouldBe
 import io.mockk.mockk
@@ -31,6 +33,13 @@ class MockClientBuilderTest : StringSpec({
         val functionIdentifier = FunctionIdentifier(clazz, "methodName")
         val underTest = MockClientBuilder(basicFunctionClients = mapOf(Pair(functionIdentifier, client)))
         underTest.getBasicServerlessFunctionClient(clazz, "methodName") shouldBe client
+    }
+
+    "can inject basic function interface" {
+        val client = mockk<ExampleBasicFunctionHandler>()
+        val clazz = ExampleBasicFunctionHandler::class.java
+        val underTest = MockClientBuilder(basicFunctionInterfaces = mapOf(Pair(clazz, client)))
+        underTest.getBasicServerlessFunctionInterface(clazz) shouldBe client
     }
 
     "can inject key value store client" {
@@ -79,5 +88,82 @@ class MockClientBuilderTest : StringSpec({
         val client = mockk<EnvironmentVariableClient>()
         val underTest = MockClientBuilder(environmentVariableClient = client)
         underTest.getEnvironmentVariableClient() shouldBe client
+    }
+
+    "correct missing basic serverless function mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for BasicServerlessFunctionClient") {
+            underTest.getBasicServerlessFunctionClient(ExampleBasicFunctionHandler::class.java, "methodName")
+        }
+    }
+
+    "correct missing database mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for DatabaseClient") {
+            underTest.getDatabaseClient(Database::class.java)
+        }
+    }
+
+    "correct missing document store mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for DocumentStoreClient") {
+            underTest.getDocumentStoreClient(Document::class.java, "")
+        }
+    }
+
+    "correct missing transactional client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for TransactionalClient") {
+            underTest.getTransactionalClient()
+        }
+    }
+
+    "correct missing environmental client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for EnvironmentVariableClient") {
+            underTest.getEnvironmentVariableClient()
+        }
+    }
+
+    "correct missing file storage client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for FileStorageClient") {
+            underTest.getFileStorageClient(Bucket::class.java, "")
+        }
+    }
+
+    "correct missing key value client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for KeyValueStoreClient") {
+            underTest.getKeyValueStoreClient(String::class.java, KeyValue::class.java, "")
+        }
+    }
+
+    "correct missing notification client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for NotificationClient") {
+            underTest.getNotificationClient(NotificationTopic::class.java, "")
+        }
+    }
+
+    "correct missing queue client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for QueueClient") {
+            underTest.getQueueClient(Queue::class.java, "")
+        }
+    }
+
+    "correct missing websocket client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for ServerlessFunctionWebSocketClient") {
+            underTest.getServerlessFunctionWebSocketClient()
+        }
+    }
+
+    "correct missing basic function interface client mock error" {
+        val underTest = MockClientBuilder()
+        shouldThrowMessage("Missing mock for function interface ExampleBasicFunctionHandler") {
+            underTest.getBasicServerlessFunctionInterface(ExampleBasicFunctionHandler::class.java)
+        }
     }
 })
