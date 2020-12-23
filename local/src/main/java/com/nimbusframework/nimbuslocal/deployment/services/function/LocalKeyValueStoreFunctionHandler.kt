@@ -22,7 +22,7 @@ class LocalKeyValueStoreFunctionHandler(
 
         val annotation = stageService.annotationForStage(keyValueFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val keyValueMethod = KeyValueMethod(method, invokeOn, annotation.method)
             val functionInformation = KeyValueStoreFunctionInformation(

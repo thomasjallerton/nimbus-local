@@ -17,7 +17,7 @@ class LocalAfterDeploymentHandler(
 
         val annotation = stageService.annotationForStage(afterDeployments) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             if (annotation.isTest) {
                 localResourceHolder.afterDeployments.addLast(AfterDeploymentMethod(method, invokeOn))

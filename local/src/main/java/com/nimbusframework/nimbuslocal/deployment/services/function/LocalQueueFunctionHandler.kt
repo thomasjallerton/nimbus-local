@@ -23,7 +23,7 @@ class LocalQueueFunctionHandler(
 
         val annotation = stageService.annotationForStage(queueServerlessFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val queueMethod = QueueMethod(method, invokeOn, annotation.batchSize)
             val queueId = QueueIdAnnotationService.getQueueId(annotation.queue.java, stageService.deployingStage)

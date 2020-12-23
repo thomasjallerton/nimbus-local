@@ -53,7 +53,7 @@
 
         <java.version>11</java.version>
 
-        <nimbus.version>0.14.0</nimbus.version>
+        <nimbus.version>0.14.1</nimbus.version>
 
         <auto-service.version>1.0-rc6</auto-service.version>
         <aws.version>1.11.699</aws.version>

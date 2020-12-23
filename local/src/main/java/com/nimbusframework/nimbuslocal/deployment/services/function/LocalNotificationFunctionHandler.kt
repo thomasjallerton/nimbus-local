@@ -23,7 +23,7 @@ class LocalNotificationFunctionHandler(
 
         val annotation = stageService.annotationForStage(notificationServerlessFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val notificationMethod = NotificationMethod(method, invokeOn)
             val topicName = NotificationTopicAnnotationService.getTopicName(annotation.notificationTopic.java, stageService.deployingStage)
