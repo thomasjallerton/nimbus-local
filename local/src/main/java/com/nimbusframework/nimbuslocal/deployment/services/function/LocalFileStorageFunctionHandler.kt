@@ -27,7 +27,7 @@ class LocalFileStorageFunctionHandler(
 
         val annotation = stageService.annotationForStage(fileStorageFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val bucketName = FileStorageBucketNameAnnotationService.getBucketName(annotation.fileStorageBucket.java, stageService.deployingStage)
             val localFileStorage = fileStorage[bucketName]!!

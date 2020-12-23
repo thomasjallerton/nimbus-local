@@ -28,7 +28,7 @@ class LocalHttpFunctionHandler(
 
         val annotation = stageService.annotationForStage(httpServerlessFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val httpMethod = LocalHttpMethod(method, invokeOn)
             val functionInformation = HttpFunctionInformation(annotation.method, annotation.path)

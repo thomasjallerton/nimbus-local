@@ -24,7 +24,7 @@ class LocalWebSocketFunctionHandler(
 
         val annotation = stageService.annotationForStage(webSocketServerlessFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val webSocketMethod = LocalWebsocketMethod(method, invokeOn)
             val functionInformation = WebSocketFunctionInformation(annotation.topic)

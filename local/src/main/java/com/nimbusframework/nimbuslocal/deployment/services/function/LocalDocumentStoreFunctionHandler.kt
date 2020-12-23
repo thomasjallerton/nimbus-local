@@ -22,7 +22,7 @@ class LocalDocumentStoreFunctionHandler(
 
         val annotation = stageService.annotationForStage(documentFunctions) {annotation -> annotation.stages}
         if (annotation != null) {
-            val invokeOn = clazz.getConstructor().newInstance()
+            val invokeOn = getFunctionClassInstance(clazz)
 
             val documentMethod = DocumentMethod(method, invokeOn, annotation.method)
             val functionInformation = DocumentStoreFunctionInformation(
