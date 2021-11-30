@@ -12,8 +12,7 @@ import java.io.InputStream
 import java.nio.file.Files
 import java.util.*
 import org.apache.tika.Tika
-
-
+import java.time.Instant
 
 
 class LocalFileStorage(bucketName: String, private val allowedOrigins: List<String>) : FileStorageClient {
@@ -97,7 +96,7 @@ class LocalFileStorage(bucketName: String, private val allowedOrigins: List<Stri
                     val path = fileName.removePrefix(tmpDir)
                             .removePrefix(File.separator)
                             .replace(File.separatorChar, '/')
-                    val lastModified = Date(file.lastModified())
+                    val lastModified = Instant.ofEpochMilli(file.lastModified())
 
                     results.add(FileInformation(lastModified, file.length() / 1024, path)) //Convert to KB
                 } else if (file.isDirectory) {
