@@ -2,7 +2,7 @@ package com.nimbusframework.nimbuslocal.eventabstractions
 
 import com.nimbusframework.nimbuscore.eventabstractions.NotificationEvent
 import com.nimbusframework.nimbuscore.eventabstractions.NotificationMessageAttribute
-import org.joda.time.DateTime
+import java.time.Instant
 import java.util.*
 
 class NotificationEventBuilder {
@@ -11,7 +11,7 @@ class NotificationEventBuilder {
     private var messageId: String? = null
     private var subject: String? = null
     private var message: String? = null
-    private var timestamp: DateTime? = DateTime.now()
+    private var timestamp: Instant = Instant.now()
     private var messageAttributes: MutableMap<String, NotificationMessageAttribute> = mutableMapOf()
     private var requestId: String = UUID.randomUUID().toString()
 
@@ -35,7 +35,7 @@ class NotificationEventBuilder {
         return this
     }
 
-    fun withTimestamp(timestamp: DateTime): NotificationEventBuilder {
+    fun withTimestamp(timestamp: Instant): NotificationEventBuilder {
         this.timestamp = timestamp
         return this
     }
